@@ -4,6 +4,8 @@ A classe Assegure e Validation devem ser usado para validacoes.
 As classe domain ficam na pasta  src\api\Tecnica\Domain\Entities .
 
 '''
+using Tecnica.Infra;
+
 package Tecnica.Domain;
 
 [Table("pessoa")]
@@ -17,7 +19,7 @@ public class Pessoa
 
     public Pessoa(sting theNome) 
     {
-        Asssegure.NaoNullo(theNome, "O nome deve ser informado.");
+        Assegure.NaoNulo(theNome, "O nome deve ser informado.");
 
         Nome = theNome;
     }

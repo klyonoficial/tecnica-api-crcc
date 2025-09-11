@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Tecnica.Infra;
 
 namespace Tecnica.Domain.Entities
 {
@@ -17,7 +18,7 @@ namespace Tecnica.Domain.Entities
 
         public Fornecedor(string nome)
         {
-            Asssegure.NaoNullo(nome, "O nome deve ser informado.");
+            Assegure.NaoNulo(nome, "O nome deve ser informado.");
             Nome = nome;
         }
     }

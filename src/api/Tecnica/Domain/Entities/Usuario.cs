@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Tecnica.Infra;
 
 namespace Tecnica.Domain.Entities
 {
@@ -33,9 +34,9 @@ namespace Tecnica.Domain.Entities
 
         public Usuario(string nome, string email, string senha)
         {
-            Asssegure.NaoNullo(nome, "O nome deve ser informado.");
-            Asssegure.NaoNullo(email, "O e-mail deve ser informado.");
-            Asssegure.NaoNullo(senha, "A senha deve ser informada.");
+            Assegure.NaoNulo(nome, "O nome deve ser informado.");
+            Assegure.NaoNulo(email, "O e-mail deve ser informado.");
+            Assegure.NaoNulo(senha, "A senha deve ser informada.");
 
             Nome = nome;
             Email = email;
