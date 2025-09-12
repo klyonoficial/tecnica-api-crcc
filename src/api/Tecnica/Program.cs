@@ -1,15 +1,27 @@
+using Microsoft.EntityFrameworkCore;
 using Serilog;
+using Tecnica.Core.Infra;
 using Tecnica.Core.Infra.Data;
+using Tecnica.Domain.Daos;
 
 var builder = WebApplication.CreateBuilder(args);
+ConfigurationManager configuration = builder.Configuration;
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+var connectionString =
+    configuration[Constants.ConnectionStringPath]
+        ?? throw new InvalidOperationException("Connection string"
+        + "'DefaultConnection' not found.");
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseMySql(connectionString, new MySqlServerVersion(new Version(8, 0, 0))));
 
+
+DaoRegister.AddDaos(builder.Services);
 
 Log.Logger = new LoggerConfiguration()
       .ReadFrom.Configuration(builder.Configuration)
@@ -40,7 +52,7 @@ var app = builder.Build();
  app.MapControllerRoute(
      name: "default",
      pattern: "{controller=Home}/{action=Index}/{id?}");
-ConfigurationManager configuration = builder.Configuration;
+
 
 Log.Information("Iniciando a execução das migrations...");
 MigrationRunner.Run(configuration);

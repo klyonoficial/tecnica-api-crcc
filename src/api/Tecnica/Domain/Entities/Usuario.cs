@@ -26,26 +26,37 @@ namespace Tecnica.Domain.Entities
         [Column("ativo")]
         public bool Ativo { get; private set; }
 
-        [Column("data_criacao")]
-        public DateTime DataCriacao { get; private set; }
+        [Column("perfil")]
+        public string Perfil { get; private set; }
 
         // Construtor requerido pelo Entity Framework
         private Usuario() { }
 
-        public Usuario(string nome, string email, string senha)
+        public Usuario(string nome, string email, string senha, string perfil)
         {
             Assegure.NaoNulo(nome, "O nome deve ser informado.");
             Assegure.NaoNulo(email, "O e-mail deve ser informado.");
             Assegure.NaoNulo(senha, "A senha deve ser informada.");
+            Assegure.NaoNulo(perfil, "O perfil deve ser informado.");
 
             Nome = nome;
             Email = email;
             Senha = senha;
             Ativo = true;
-            DataCriacao = DateTime.UtcNow;
+            Perfil = perfil;
         }
 
-        public void Ativar() => Ativo = true;
+        public void Atualizar(string nome, string email, bool ativo, string perfil)
+        {
+            Assegure.NaoNulo(nome, "O nome deve ser informado.");
+            Assegure.NaoNulo(email, "O e-mail deve ser informado.");
+            Assegure.NaoNulo(perfil, "O perfil deve ser informado.");
+
+            Nome = nome;
+            Email = email;
+            Ativo = ativo;
+            Perfil = perfil;
+        }
         public void Desativar() => Ativo = false;
     }
 }

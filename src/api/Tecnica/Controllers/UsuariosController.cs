@@ -1,4 +1,8 @@
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Tecnica.Domain.Daos;
+using Tecnica.Domain.Dtos;
+using Tecnica.Domain.Entities;
 
 namespace Tecnica.Controllers
 {
@@ -6,34 +10,71 @@ namespace Tecnica.Controllers
     [Route("api/[controller]")]
     public class UsuariosController : ControllerBase
     {
-        [HttpGet]
-        public IActionResult GetUsuarios()
+        private readonly UsuarioDao _usuarioDao;
+        private readonly ApplicationDbContext _context;
+
+        public UsuariosController(UsuarioDao usuarioDao, ApplicationDbContext context)
         {
-            return Ok("Lista de usuários");
+            _usuarioDao = usuarioDao;
+            _context = context;
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetUsuarios()
+        {
+            var usuarios = await _usuarioDao.ListarTodosAsync();
+            return Ok(usuarios.Select(ToDto));
         }
 
         [HttpGet("{id}")]
-        public IActionResult GetUsuario(int id)
+        public async Task<IActionResult> GetUsuario(int id)
         {
-            return Ok($"Usuário com ID: {id}");
+            var usuario = await _usuarioDao.ObterPorIdAsync(id);
+            if (usuario == null)
+                return NotFound();
+            return Ok(ToDto(usuario));
         }
 
         [HttpPost]
-        public IActionResult CreateUsuario([FromBody] object usuario)
+        public async Task<IActionResult> CreateUsuario([FromBody] UsuarioDto usuarioDto)
         {
-            return CreatedAtAction(nameof(GetUsuario), new { id = 1 }, usuario);
+            var usuario = ToEntity(usuarioDto);
+            await _usuarioDao.AdicionarAsync(usuario);
+            await _context.SaveChangesAsync();
+            return CreatedAtAction(nameof(GetUsuario), new { id = usuario.Id });
         }
 
-        [HttpPut("{id}")]
-        public IActionResult UpdateUsuario(int id, [FromBody] object usuario)
+        private UsuarioDto ToDto(Usuario usuario)
         {
-            return Ok($"Usuário {id} atualizado");
+            return new UsuarioDto
+            {
+                Id = usuario.Id,
+                Nome = usuario.Nome,
+                Email = usuario.Email,
+                Ativo = usuario.Ativo,
+                Perfil = usuario.Perfil
+            };
         }
 
-        [HttpDelete("{id}")]
-        public IActionResult DeleteUsuario(int id)
+        private Usuario ToEntity(UsuarioDto usuarioDto)
         {
-            return Ok($"Usuário {id} removido");
+            return new Usuario(usuarioDto.Nome, usuarioDto.Email, "senhaFixa123", usuarioDto.Perfil);
+        }
+
+        [HttpPut()]
+        public async Task<IActionResult> UpdateUsuario([FromBody] UsuarioDto usuarioDto)
+        {
+            var usuario = await _usuarioDao.ObterPorIdAsync(usuarioDto.Id);
+            if (usuario == null)
+                return NotFound();
+
+            usuario.Atualizar(usuarioDto.Nome, usuarioDto.Email, usuarioDto.Ativo, usuarioDto.Perfil);
+
+            await _usuarioDao.AtualizarAsync(usuario);
+            await _context.SaveChangesAsync();
+
+
+            return Ok();
         }
     }
 }
