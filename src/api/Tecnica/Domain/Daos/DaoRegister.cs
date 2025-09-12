@@ -6,11 +6,22 @@ namespace Tecnica.Domain.Daos
     {
         public static IServiceCollection AddDaos(this IServiceCollection services)
         {
-            // Exemplo de registro de DAOs:
+            // Registro de DAOs:
             services.AddScoped<UsuarioDao>();
-            // services.AddScoped<IProdutoDao, ProdutoDao>();
-
-            // Adicione aqui os registros dos seus DAOs
+            services.AddScoped<ArquivoDao>();
+            services.AddScoped<ClienteDao>();
+            services.AddScoped<EnderecoDao>();
+            services.AddScoped<FormaPagamentoDao>();
+            services.AddScoped<FornecedorDao>();
+            services.AddScoped<ObservacaoDao>();
+            services.AddScoped<ProdutoDao>();
+            services.AddScoped<RotaCobrancaDao>();
+            services.AddScoped<RotaCobrancaVendaDao>();
+            services.AddScoped<RotaEntregaDao>();
+            services.AddScoped<RotaEntregaVendaDao>();
+            services.AddScoped<VendaDao>();
+            services.AddScoped<VendaParcelaDao>();
+            services.AddScoped<VendaProdutoDao>();
 
             return services;
         }
