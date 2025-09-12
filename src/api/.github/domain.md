@@ -1,7 +1,7 @@
-O formato das classe de dominio é o seguinte.
-Utiliza Entity Framework Core como Orm.
-A classe Assegure e Validation devem ser usado para validacoes.
-As classe domain ficam na pasta  src\api\Tecnica\Domain\Entities .
+- O formato das classe de dominio é o seguinte abaixo.
+- Utiliza Entity Framework Core como Orm.
+- A classe Assegure e Validation devem ser usado para validacoes.
+- As classe domain ficam na pasta  src\api\Tecnica\Domain\Entities .
 
 '''
 using Tecnica.Infra;
