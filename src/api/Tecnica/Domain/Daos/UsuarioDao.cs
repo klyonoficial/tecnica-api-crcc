@@ -30,11 +30,6 @@ namespace Tecnica.Domain.Daos
             await _context.Set<Usuario>().AddAsync(usuario);
         }
 
-        public async Task AtualizarAsync(Usuario usuario)
-        {
-            _context.Set<Usuario>().Update(usuario);
-        }
-
         public async Task RemoverAsync(Usuario usuario)
         {
             _context.Set<Usuario>().Remove(usuario);

@@ -30,11 +30,6 @@ namespace Tecnica.Domain.Daos
             await _context.Set<Observacao>().AddAsync(observacao);
         }
 
-        public async Task AtualizarAsync(Observacao observacao)
-        {
-            _context.Set<Observacao>().Update(observacao);
-        }
-
         public async Task RemoverAsync(Observacao observacao)
         {
             _context.Set<Observacao>().Remove(observacao);

@@ -30,11 +30,6 @@ namespace Tecnica.Domain.Daos
             await _context.Set<Produto>().AddAsync(produto);
         }
 
-        public async Task AtualizarAsync(Produto produto)
-        {
-            _context.Set<Produto>().Update(produto);
-        }
-
         public async Task RemoverAsync(Produto produto)
         {
             _context.Set<Produto>().Remove(produto);

@@ -21,5 +21,11 @@ namespace Tecnica.Domain.Entities
             Assegure.NaoNulo(nome, "O nome deve ser informado.");
             Nome = nome;
         }
+
+        public void Atualizar(string nome)
+        {
+            Assegure.NaoNulo(nome, "O nome deve ser informado.");
+            Nome = nome;
+        }
     }
 }

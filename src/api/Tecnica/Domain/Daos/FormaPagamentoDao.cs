@@ -30,11 +30,6 @@ namespace Tecnica.Domain.Daos
             await _context.Set<FormaPagamento>().AddAsync(formaPagamento);
         }
 
-        public async Task AtualizarAsync(FormaPagamento formaPagamento)
-        {
-            _context.Set<FormaPagamento>().Update(formaPagamento);
-        }
-
         public async Task RemoverAsync(FormaPagamento formaPagamento)
         {
             _context.Set<FormaPagamento>().Remove(formaPagamento);

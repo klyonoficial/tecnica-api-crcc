@@ -30,11 +30,6 @@ namespace Tecnica.Domain.Daos
             await _context.Set<RotaCobranca>().AddAsync(rotaCobranca);
         }
 
-        public async Task AtualizarAsync(RotaCobranca rotaCobranca)
-        {
-            _context.Set<RotaCobranca>().Update(rotaCobranca);
-        }
-
         public async Task RemoverAsync(RotaCobranca rotaCobranca)
         {
             _context.Set<RotaCobranca>().Remove(rotaCobranca);

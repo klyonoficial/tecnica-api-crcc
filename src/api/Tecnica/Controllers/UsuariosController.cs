@@ -70,7 +70,6 @@ namespace Tecnica.Controllers
 
             usuario.Atualizar(usuarioDto.Nome, usuarioDto.Email, usuarioDto.Ativo, usuarioDto.Perfil);
 
-            await _usuarioDao.AtualizarAsync(usuario);
             await _context.SaveChangesAsync();
 
 

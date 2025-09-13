@@ -30,11 +30,6 @@ namespace Tecnica.Domain.Daos
             await _context.Set<Fornecedor>().AddAsync(fornecedor);
         }
 
-        public async Task AtualizarAsync(Fornecedor fornecedor)
-        {
-            _context.Set<Fornecedor>().Update(fornecedor);
-        }
-
         public async Task RemoverAsync(Fornecedor fornecedor)
         {
             _context.Set<Fornecedor>().Remove(fornecedor);
