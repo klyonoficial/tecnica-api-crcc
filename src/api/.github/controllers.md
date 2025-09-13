@@ -1,7 +1,7 @@
 A seguir temos um exemplo de Controller para a classe de dominio Usuario.
 
 ### Pontos
-- Sempre vai existir pelo menos os metodos 
+- Exemplo de actions que podem existir:
         - Lista todas as entidades
         [HttpGet]
         public async Task<IActionResult> GetEntidadess()
@@ -104,7 +104,6 @@ namespace Tecnica.Controllers
 
             usuario.Atualizar(usuarioDto.Nome, usuarioDto.Email, usuarioDto.Ativo);
 
-            await _usuarioDao.AtualizarAsync(usuario);
             await _context.SaveChangesAsync();
 
             return Ok();
