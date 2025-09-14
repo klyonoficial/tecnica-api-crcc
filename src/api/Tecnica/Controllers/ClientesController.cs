@@ -1,6 +1,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Tecnica.Domain.Daos;
 using Tecnica.Domain.Dtos;
@@ -27,24 +28,9 @@ namespace Tecnica.Controllers
         [HttpGet]
         public async Task<IActionResult> GetClientes([FromQuery] string? status, [FromQuery] string? filtro)
         {
-            var clientes = await _clienteDao.ListarTodosAsync();
+            var clientes = await _clienteDao.ListarPorFiltroAsync(status, filtro);
 
-            var query = clientes.AsQueryable();
-
-            if (!string.IsNullOrWhiteSpace(status))
-                query = query.Where(c => c.Status == status);
-
-            if (!string.IsNullOrWhiteSpace(filtro))
-            {
-                var f = filtro.ToLower();
-                query = query.Where(c => (c.RazaoSocial ?? "").ToLower().Contains(f)
-                    || (c.NomeFantasia ?? "").ToLower().Contains(f)
-                    || (c.TelefoneNumero ?? "").ToLower().Contains(f)
-                    || (c.Contato ?? "").ToLower().Contains(f)
-                    || (c.CpfCnpj ?? "").ToLower().Contains(f));
-            }
-
-            var result = query.OrderBy(c => c.RazaoSocial).Select(c => new ClienteResultDto
+            var result = clientes.Select(c => new ClienteResultDto
             {
                 Id = c.Id,
                 CpfCnpj = c.CpfCnpj,
@@ -69,9 +55,23 @@ namespace Tecnica.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateCliente([FromBody] NovoClienteDto dto)
+        public async Task<IActionResult> CreateCliente([FromBody] ClienteDto dto)
         {
-            var cliente = new Cliente(dto.VendedorId, dto.CpfCnpj, dto.RazaoSocial, dto.NomeFantasia, dto.Contato, dto.TelefoneDdd, dto.TelefoneNumero, dto.DiaCobranca, dto.DadosSerasa);
+            // Map Enderecos DTOs
+            List<Endereco>? enderecos = null;
+            if (dto.Enderecos != null && dto.Enderecos.Any())
+            {
+                enderecos = dto.Enderecos.Select(e => e.ToEntity(dto.Id)).ToList();
+            }
+
+            // Map Arquivos DTOs (if ArquivoDto exists with needed props)
+            List<Arquivo>? arquivos = null;
+            if (dto.Arquivos != null && dto.Arquivos.Any())
+            {
+                arquivos = dto.Arquivos.Select(a => a.ToEntity(dto.Id)).ToList();
+            }
+
+            var cliente = new Cliente(dto.VendedorId, dto.CpfCnpj, dto.RazaoSocial, dto.NomeFantasia, dto.Contato, dto.TelefoneDdd, dto.TelefoneNumero, dto.DiaCobranca, dto.DadosSerasa, enderecos, arquivos);
             await _clienteDao.AdicionarAsync(cliente);
             await _context.SaveChangesAsync();
             return CreatedAtAction(nameof(GetCliente), new { id = cliente.Id }, ToDto(cliente));
@@ -84,152 +84,37 @@ namespace Tecnica.Controllers
             if (cliente == null)
                 return NotFound();
 
-            // Atualiza manualmente as propriedades necessárias
-            cliente.VendedorId = dto.VendedorId;
-            cliente.CpfCnpj = dto.CpfCnpj;
-            cliente.RazaoSocial = dto.RazaoSocial;
-            cliente.NomeFantasia = dto.NomeFantasia;
-            cliente.Contato = dto.Contato;
-            cliente.TelefoneDdd = dto.TelefoneDdd;
-            cliente.TelefoneNumero = dto.TelefoneNumero;
-            cliente.DiaCobranca = dto.DiaCobranca;
-            cliente.Status = dto.Status ?? cliente.Status;
-            cliente.DadosSerasa = dto.DadosSerasa;
-
-            await _context.SaveChangesAsync();
-
-            return Ok();
-        }
-
-        // Endereços
-        [HttpPost("{id}/endereco")]
-        public async Task<IActionResult> AddEndereco(long id, [FromBody] EnderecoDto dto)
-        {
-            var cliente = await _clienteDao.ObterPorIdAsync(id);
-            if (cliente == null)
-                return NotFound();
-
-            var endereco = new Endereco(id, dto.Cep, dto.CodigoIbge, dto.Bairro, dto.UF, dto.Numero, dto.Complemento, dto.Tipo);
-            await _context.Set<Endereco>().AddAsync(endereco);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction(nameof(GetEnderecos), new { id }, dto);
-        }
-
-        [HttpPut("{id}/endereco")]
-        public async Task<IActionResult> UpdateEndereco(long id, [FromBody] EnderecoDto dto)
-        {
-            var endereco = await _context.Set<Endereco>().FindAsync(dto.Id);
-            if (endereco == null || endereco.ClienteId != id)
-                return NotFound();
-
-            endereco.Cep = dto.Cep;
-            endereco.CodigoIbge = dto.CodigoIbge;
-            endereco.Bairro = dto.Bairro;
-            endereco.UF = dto.UF;
-            endereco.Numero = dto.Numero;
-            endereco.Complemento = dto.Complemento;
-            endereco.Tipo = dto.Tipo;
-
-            _context.Set<Endereco>().Update(endereco);
-            await _context.SaveChangesAsync();
-
-            return Ok();
-        }
-
-        [HttpDelete("{id}/endereco")]
-        public async Task<IActionResult> DeleteEndereco(long id, [FromQuery] long enderecoId)
-        {
-            var endereco = await _context.Set<Endereco>().FindAsync(enderecoId);
-            if (endereco == null || endereco.ClienteId != id)
-                return NotFound();
-
-            _context.Set<Endereco>().Remove(endereco);
-            await _context.SaveChangesAsync();
-            return NoContent();
-        }
-
-        [HttpGet("{id}/endereco")]
-        public async Task<IActionResult> GetEnderecos(long id)
-        {
-            var list = await _context.Set<Endereco>().Where(e => e.ClienteId == id).ToListAsync();
-            var dtos = list.Select(e => new EnderecoDto
+            // Use domain entity method to perform update (includes status normalization)
+            // Map EnderecoDto list to Endereco entities
+            List<Endereco>? enderecos = null;
+            if (dto.Enderecos != null && dto.Enderecos.Any())
             {
-                Id = e.Id,
-                ClienteId = e.ClienteId,
-                Cep = e.Cep,
-                CodigoIbge = e.CodigoIbge,
-                Bairro = e.Bairro,
-                UF = e.UF,
-                Numero = e.Numero,
-                Complemento = e.Complemento,
-                Tipo = e.Tipo
-            }).ToList();
+                enderecos = dto.Enderecos.Select(e => new Endereco(
+                    dto.Id,
+                    e.Cep,
+                    e.CodigoIbge,
+                    e.Bairro,
+                    e.UF,
+                    e.Numero,
+                    e.Complemento,
+                    e.Tipo
+                )).ToList();
+            }
 
-            return Ok(dtos);
-        }
-
-        // Observações
-        [HttpPost("{id}/observacao")]
-        public async Task<IActionResult> AddObservacao(long id, [FromBody] ObservacaoDto dto)
-        {
-            var obs = new Observacao("cliente", id, dto.Texto);
-            await _observacaoDao.AdicionarAsync(obs);
-            await _context.SaveChangesAsync();
-            return CreatedAtAction(nameof(GetObservacoes), new { id }, dto);
-        }
-
-        [HttpPut("{id}/observacao")]
-        public async Task<IActionResult> UpdateObservacao(long id, [FromBody] ObservacaoDto dto)
-        {
-            var observacao = await _observacaoDao.ObterPorIdAsync(dto.Id);
-            if (observacao == null || observacao.EntidadeId != id)
-                return NotFound();
-
-            observacao.Texto = dto.Texto;
+            cliente.Atualizar(
+                dto.VendedorId,
+                dto.CpfCnpj,
+                dto.RazaoSocial,
+                dto.NomeFantasia,
+                dto.Contato,
+                dto.TelefoneDdd,
+                dto.TelefoneNumero,
+                dto.DiaCobranca,
+                enderecos,
+                dto.DadosSerasa);
 
             await _context.SaveChangesAsync();
-            return Ok();
-        }
 
-        [HttpDelete("{id}/observacao")]
-        public async Task<IActionResult> DeleteObservacao(long id, [FromQuery] long observacaoId)
-        {
-            var observacao = await _observacaoDao.ObterPorIdAsync(observacaoId);
-            if (observacao == null || observacao.EntidadeId != id)
-                return NotFound();
-
-            await _observacaoDao.RemoverAsync(observacao);
-            await _context.SaveChangesAsync();
-            return NoContent();
-        }
-
-        [HttpGet("{id}/observacao")]
-        public async Task<IActionResult> GetObservacoes(long id)
-        {
-            var list = await _context.Set<Observacao>().Where(o => o.Entidade == "cliente" && o.EntidadeId == id).ToListAsync();
-            var dtos = list.Select(o => new ObservacaoDto
-            {
-                Id = o.Id,
-                Entidade = o.Entidade,
-                EntidadeId = o.EntidadeId,
-                Texto = o.Texto
-            }).ToList();
-
-            return Ok(dtos);
-        }
-
-        // Serasa
-        [HttpPut("{id}/serasa")]
-        public async Task<IActionResult> UpdateSerasa(long id, [FromBody] ClienteSerasaDto dto)
-        {
-            var cliente = await _clienteDao.ObterPorIdAsync(id);
-            if (cliente == null)
-                return NotFound();
-
-            cliente.DadosSerasa = dto.DadosSerasa;
-
-            await _context.SaveChangesAsync();
             return Ok();
         }
 
@@ -240,8 +125,7 @@ namespace Tecnica.Controllers
             if (cliente == null)
                 return NotFound();
 
-            cliente.Status = "aprovado";
-            cliente.DataAprovou = System.DateTime.UtcNow;
+            cliente.Aprovar();
 
             await _context.SaveChangesAsync();
             return Ok();
@@ -254,7 +138,7 @@ namespace Tecnica.Controllers
             if (cliente == null)
                 return NotFound();
 
-            cliente.Status = "reprovado";
+            cliente.Reprovar();
 
             await _context.SaveChangesAsync();
             return Ok();
@@ -267,7 +151,7 @@ namespace Tecnica.Controllers
             if (cliente == null)
                 return NotFound();
 
-            cliente.Status = "inativo";
+            cliente.Inativar();
 
             await _context.SaveChangesAsync();
             return Ok();
@@ -309,7 +193,40 @@ namespace Tecnica.Controllers
                 Status = c.Status,
                 DataAprovou = c.DataAprovou,
                 DataCadastro = c.DataCadastro,
-                DadosSerasa = c.DadosSerasa
+                DadosSerasa = c.DadosSerasa,
+                Enderecos = c.Enderecos?.Select(e => ToDto(e)).ToList() ?? new List<EnderecoDto>(),
+                Arquivos = c.Arquivos?.Select(a => ToDto(a)).ToList() ?? new List<ArquivoDto>()
+            };
+        }
+
+        public EnderecoDto ToDto(Endereco endereco)
+        {
+            if (endereco == null) return null;
+
+            return new EnderecoDto
+            {
+                Id = endereco.Id,
+                ClienteId = endereco.ClienteId,
+                Cep = endereco.Cep,
+                CodigoIbge = endereco.CodigoIbge,
+                Bairro = endereco.Bairro,
+                UF = endereco.UF,
+                Numero = endereco.Numero,
+                Complemento = endereco.Complemento,
+                Tipo = endereco.Tipo
+            };
+        }
+
+        public ArquivoDto ToDto(Arquivo arquivo)
+        {
+            if (arquivo == null) return null;
+
+            return new ArquivoDto
+            {
+                Id = arquivo.Id,
+                ClienteId = arquivo.ClienteId,
+                Tipo = arquivo.Tipo,
+                Nome = arquivo.Nome
             };
         }
     }

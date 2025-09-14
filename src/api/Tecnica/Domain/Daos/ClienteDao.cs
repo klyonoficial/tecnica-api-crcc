@@ -25,6 +25,26 @@ namespace Tecnica.Domain.Daos
             return await _context.Set<Cliente>().ToListAsync();
         }
 
+        public async Task<List<Cliente>> ListarPorFiltroAsync(string? status, string? filtro)
+        {
+            var query = _context.Set<Cliente>().AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(status))
+                query = query.Where(c => c.Status == status);
+
+            if (!string.IsNullOrWhiteSpace(filtro))
+            {
+                var f = filtro.ToLower();
+                query = query.Where(c => (c.RazaoSocial ?? "").ToLower().Contains(f)
+                    || (c.NomeFantasia ?? "").ToLower().Contains(f)
+                    || (c.TelefoneNumero ?? "").ToLower().Contains(f)
+                    || (c.Contato ?? "").ToLower().Contains(f)
+                    || (c.CpfCnpj ?? "").ToLower().Contains(f));
+            }
+
+            return await query.OrderBy(c => c.RazaoSocial).ToListAsync();
+        }
+
         public async Task AdicionarAsync(Cliente cliente)
         {
             await _context.Set<Cliente>().AddAsync(cliente);

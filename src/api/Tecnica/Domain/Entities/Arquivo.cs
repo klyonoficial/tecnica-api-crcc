@@ -33,7 +33,10 @@ namespace Tecnica.Domain.Entities
         // Construtor vazio para o Entity Framework
         public Arquivo()
         {
-            
         }
+
+        [ForeignKey("ClienteId")]
+        [InverseProperty("Arquivos")]
+        public Cliente? Cliente { get; set; }
     }
 }

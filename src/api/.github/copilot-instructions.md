@@ -10,21 +10,21 @@ class ContaBancaria {
     private saldo: number;
 
     constructor(saldoInicial: number) {
-        this.saldo = saldoInicial;
+        saldo = saldoInicial;
     }
 
     public depositar(valor: number): void {
-        this.saldo += valor;
+        saldo += valor;
     }
 
     public sacar(valor: number): void {
-        if (valor <= this.saldo) {
-            this.saldo -= valor;
+        if (valor <= saldo) {
+            saldo -= valor;
         }
     }
 
     public obterSaldo(): number {
-        return this.saldo;
+        return saldo;
     }
 }
 
@@ -87,5 +87,66 @@ public class UsuarioController : ControllerBase
         if (usuario == null)
             return NotFound();
         return Ok(usuario);
+    }
+}
+
+# Regras de Uso de Datas
+
+- Sempre utilize `DateTime.Now` para obter a data e hora atual do sistema. Não utilize outras formas como `DateTime.UtcNow`, `DateTime.Today` ou instâncias manuais de `DateTime` para representar a data e hora corrente, exceto em casos específicos de necessidade de fuso horário ou testes.
+
+Exemplo (correto):
+var dataAtual = DateTime.Now;
+
+Exemplo (incorreto):
+var dataAtual = DateTime.UtcNow;
+var dataAtual = DateTime.Today;
+var dataAtual = new DateTime(2024, 6, 1);
+
+
+# Regras de Dependência entre Camadas
+
+- Classes do domínio (pasta `Domain`) **não podem** referenciar ou depender de classes de DTO (pasta `Dto`). O domínio deve ser independente de detalhes de transporte ou apresentação, garantindo isolamento e reutilização das regras de negócio.
+
+Exemplo (correto):
+// Em Domain
+public class Pedido
+{
+    // propriedades e métodos de negócio
+}
+
+// Em Dto
+public class PedidoDto
+{
+    // propriedades para transporte de dados
+}
+
+Exemplo (incorreto):
+// Em Domain
+public class Pedido
+{
+    public PedidoDto ToDto() { ... } // Não permitido!
+}
+
+# Regras de Uso de Fully Qualified Names (FQN)
+
+- Não utilize nomes totalmente qualificados (FQN) ao referenciar classes dentro do código. Sempre prefira adicionar a diretiva `using` no início do arquivo para importar o namespace necessário e utilize apenas o nome da classe no restante do código.
+
+Exemplo (correto):
+using MeuProjeto.Domain;
+
+public class Exemplo
+{
+    public void Metodo()
+    {
+        var pedido = new Pedido();
+    }
+}
+
+Exemplo (incorreto):
+public class Exemplo
+{
+    public void Metodo()
+    {
+        var pedido = new MeuProjeto.Domain.Pedido(); // Não utilize FQN
     }
 }

@@ -15,5 +15,7 @@ namespace Tecnica.Domain.Dtos
         public DateTime? DataAprovou { get; set; }
         public DateTime DataCadastro { get; set; }
         public string? DadosSerasa { get; set; }
+        public List<EnderecoDto> Enderecos { get; set; } = new();
+        public List<ArquivoDto> Arquivos { get; set; } = new();
     }
 }

@@ -58,5 +58,9 @@ namespace Tecnica.Domain.Entities
         {
             
         }
+
+        [ForeignKey("ClienteId")]
+        [InverseProperty("Enderecos")]
+        public virtual Cliente? Cliente { get; set; }
     }
 }

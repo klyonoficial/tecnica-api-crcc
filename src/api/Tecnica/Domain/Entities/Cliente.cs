@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Tecnica.Infra;
@@ -48,6 +50,12 @@ namespace Tecnica.Domain.Entities
         [Column("dados_serasa")]
         public string? DadosSerasa { get; set; }
 
+        [InverseProperty("Cliente")]
+        public virtual ICollection<Endereco> Enderecos { get; set; }
+
+        [InverseProperty("Cliente")]
+        public virtual ICollection<Arquivo> Arquivos { get; set; }
+
         public Cliente(
             long vendedorId,
             string cpfCnpj,
@@ -57,7 +65,9 @@ namespace Tecnica.Domain.Entities
             string? telefoneDdd,
             string? telefoneNumero,
             int diaCobranca,
-            string? dadosSerasa)
+            string? dadosSerasa,
+            List<Endereco>? enderecos = null,
+            List<Arquivo>? arquivos = null)
         {
             Assegure.Que(vendedorId > 0, "O vendedor deve ser informado.");
             Assegure.NaoNulo(cpfCnpj, "O CPF/CNPJ deve ser informado.");
@@ -72,14 +82,82 @@ namespace Tecnica.Domain.Entities
             TelefoneDdd = telefoneDdd;
             TelefoneNumero = telefoneNumero;
             DiaCobranca = diaCobranca;
-            Status = "";
+            Status = DomainEnums.ClienteStatus.CAD.ToString();
             DadosSerasa = dadosSerasa;
+            Enderecos = enderecos?.ToList() ?? new List<Endereco>();
+            Arquivos = arquivos?.ToList() ?? new List<Arquivo>();
         }
 
         // Construtor vazio para o Entity Framework
         public Cliente()
         {
-            
+            CpfCnpj = string.Empty;
+            RazaoSocial = string.Empty;
+            Status = DomainEnums.ClienteStatus.CAD.ToString();
+            Enderecos = new List<Endereco>();
+            Arquivos = new List<Arquivo>();
+        }
+
+        // Status helpers
+        public void SetStatus(DomainEnums.ClienteStatus status)
+        {
+            Status = status.ToString();
+            if (status == DomainEnums.ClienteStatus.APROV)
+            {
+                DataAprovou = DateTime.Now;
+            }
+        }
+
+        public void Aprovar()
+        {
+            SetStatus(DomainEnums.ClienteStatus.APROV);
+        }
+
+        public void Reprovar()
+        {
+            SetStatus(DomainEnums.ClienteStatus.REPR);
+        }
+
+        public void Inativar()
+        {
+            SetStatus(DomainEnums.ClienteStatus.INAT);
+        }
+
+        // Note: status should only be changed by domain operations (Aprovar/Reprovar/Inativar)
+
+        public void Atualizar(
+            long vendedorId,
+            string cpfCnpj,
+            string razaoSocial,
+            string? nomeFantasia,
+            string? contato,
+            string? telefoneDdd,
+            string? telefoneNumero,
+            int diaCobranca,
+            List<Endereco>? enderecos,
+            string? dadosSerasa)
+        {
+            // Reuse domain validations when appropriate
+            Assegure.Que(vendedorId > 0, "O vendedor deve ser informado.");
+            Assegure.NaoNulo(cpfCnpj, "O CPF/CNPJ deve ser informado.");
+            Assegure.NaoNulo(razaoSocial, "A razão social deve ser informada.");
+
+            VendedorId = vendedorId;
+            CpfCnpj = cpfCnpj;
+            RazaoSocial = razaoSocial;
+            NomeFantasia = nomeFantasia;
+            Contato = contato;
+            TelefoneDdd = telefoneDdd;
+            TelefoneNumero = telefoneNumero;
+            DiaCobranca = diaCobranca;
+
+            // Replace enderecos if provided
+            if (enderecos != null)
+            {
+                Enderecos = enderecos.ToList();
+            }
+
+            DadosSerasa = dadosSerasa;
         }
     }
 }
