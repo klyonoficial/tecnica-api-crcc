@@ -63,6 +63,15 @@ namespace Tecnica.Domain.Entities
         [Column("endereco_tipo")]
         public string? EnderecoTipo { get; set; }
 
+        [InverseProperty("Venda")]
+        public virtual ICollection<VendaProduto>? VendaProdutos { get; set; }
+
+        [InverseProperty("Venda")]
+        public virtual ICollection<RotaEntregaVenda>? RotaEntregaVendas { get; set; }
+
+        [InverseProperty("Venda")]
+        public virtual ICollection<RotaCobrancaParcela>? RotaCobrancaParcelas { get; set; }
+
         public Venda(
             DateTime dataCadastro,
             string status,

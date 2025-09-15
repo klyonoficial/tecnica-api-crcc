@@ -27,6 +27,9 @@ namespace Tecnica.Domain.Entities
         [Column("total_recebido")]
         public decimal? TotalRecebido { get; set; }
 
+        [InverseProperty("RotaCobranca")]
+        public virtual ICollection<RotaCobrancaParcela>? RotaCobrancaParcelas { get; set; }
+
         public RotaCobranca(
             DateTime data,
             long cobradorId,

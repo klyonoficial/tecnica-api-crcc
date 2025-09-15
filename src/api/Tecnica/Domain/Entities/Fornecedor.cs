@@ -14,6 +14,9 @@ namespace Tecnica.Domain.Entities
         [Required]
         public string Nome { get; private set; }
 
+        [InverseProperty("Fornecedor")]
+        public virtual ICollection<Produto>? Produtos { get; set; }
+
         private Fornecedor() { }
 
         public Fornecedor(string nome)

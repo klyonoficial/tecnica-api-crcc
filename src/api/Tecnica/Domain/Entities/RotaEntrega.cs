@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Tecnica.Infra;
@@ -14,6 +15,9 @@ namespace Tecnica.Domain.Entities
 
         [Column("data")]
         public DateTime Data { get; set; }
+
+        [InverseProperty("RotaEntrega")]
+        public virtual ICollection<RotaEntregaVenda>? RotaEntregaVendas { get; set; }
 
         public RotaEntrega(DateTime data)
         {

@@ -36,6 +36,13 @@ namespace Tecnica.Domain.Entities
         [Column("forma_pagamento_id")]
         public long? FormaPagamentoId { get; set; }
 
+        [ForeignKey("VendaId")]
+        [InverseProperty("VendaParcelas")]
+        public virtual Venda? Venda { get; set; }
+
+        [InverseProperty("RotaCobrancaParcela")]
+        public virtual ICollection<RotaCobrancaParcela>? RotaCobrancaParcelas { get; set; }
+
         public VendaParcela(
             long vendaId,
             DateTime dataVencimento,

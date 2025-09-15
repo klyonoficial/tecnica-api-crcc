@@ -26,6 +26,10 @@ namespace Tecnica.Domain.Entities
         [Column("numeros_serie")]
         public string? NumerosSerie { get; set; }
 
+        [ForeignKey("VendaId")]
+        [InverseProperty("VendaProdutos")]
+        public virtual Venda? Venda { get; set; }
+
         public VendaProduto(long vendaId, long produtoId, decimal preco, int quantidade, string? numerosSerie)
         {
             Assegure.Que(vendaId > 0, "A venda deve ser informada.");

@@ -32,5 +32,17 @@ namespace Tecnica.Domain.Entities
 
         // Construtor vazio para o Entity Framework
         public RotaCobrancaVenda() { }
+
+        [ForeignKey("RotaCobrancaId")]
+        [InverseProperty("RotaCobrancaVendas")]
+        public virtual RotaCobranca? RotaCobranca { get; set; }
+
+        [ForeignKey("VendaId")]
+        [InverseProperty("RotaCobrancaVendas")]
+        public virtual Venda? Venda { get; set; }
+
+        [ForeignKey("ParcelaId")]
+        [InverseProperty("RotaCobrancaVendas")]
+        public virtual VendaParcela? VendaParcela { get; set; }
     }
 }

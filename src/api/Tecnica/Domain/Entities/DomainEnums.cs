@@ -46,5 +46,12 @@ namespace Tecnica.Domain.Entities
 
             REPR,
         }
+
+        public enum TipoEndereco
+        {
+            COBR,
+            ENT,
+            OUT
+        }
     }
 }

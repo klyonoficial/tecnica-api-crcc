@@ -18,6 +18,7 @@ namespace Tecnica.Domain.Entities
         public long FornecedorId { get; private set; }
 
         [ForeignKey("FornecedorId")]
+        [InverseProperty("Produtos")]
         public Fornecedor Fornecedor { get; private set; }
 
         // Construtor requerido pelo Entity Framework

@@ -20,6 +20,14 @@ namespace Tecnica.Domain.Entities
         [Column("status")]
         public string Status { get; set; }
 
+        [ForeignKey("RotaEntregaId")]
+        [InverseProperty("RotaEntregaVendas")]
+        public virtual RotaEntrega? RotaEntrega { get; set; }
+
+        [ForeignKey("VendaId")]
+        [InverseProperty("RotaEntregaVendas")]
+        public virtual Venda? Venda { get; set; }
+
         public RotaEntregaVenda(long rotaEntregaId, long vendaId)
         {
             Assegure.Que(rotaEntregaId > 0, "A rota de entrega deve ser informada.");
