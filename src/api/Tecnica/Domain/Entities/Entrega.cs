@@ -4,8 +4,8 @@ using Tecnica.Infra;
 
 namespace Tecnica.Domain.Entities
 {
-    [Table("rota_entrega_venda")]
-    public class RotaEntregaVenda
+    [Table("entrega")]
+    public class Entrega
     {
         [Key]
         [Column("id")]
@@ -21,14 +21,14 @@ namespace Tecnica.Domain.Entities
         public string Status { get; set; }
 
         [ForeignKey("RotaEntregaId")]
-        [InverseProperty("RotaEntregaVendas")]
+        [InverseProperty("Entregas")]
         public virtual RotaEntrega? RotaEntrega { get; set; }
 
         [ForeignKey("VendaId")]
-        [InverseProperty("RotaEntregaVendas")]
+        [InverseProperty("Entregas")]
         public virtual Venda? Venda { get; set; }
 
-        public RotaEntregaVenda(long rotaEntregaId, long vendaId)
+        public Entrega(long rotaEntregaId, long vendaId)
         {
             Assegure.Que(rotaEntregaId > 0, "A rota de entrega deve ser informada.");
             Assegure.Que(vendaId > 0, "A venda deve ser informada.");
@@ -39,7 +39,7 @@ namespace Tecnica.Domain.Entities
         }
 
         // Construtor vazio para o Entity Framework
-        public RotaEntregaVenda()
+        public Entrega()
         {
 
         }

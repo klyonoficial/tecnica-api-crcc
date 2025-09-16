@@ -5,8 +5,8 @@ using Tecnica.Infra;
 
 namespace Tecnica.Domain.Entities
 {
-    [Table("venda_parcela")]
-    public class VendaParcela
+    [Table("parcela")]
+    public class Parcela
     {
         [Key]
         [Column("id")]
@@ -37,13 +37,13 @@ namespace Tecnica.Domain.Entities
         public long? FormaPagamentoId { get; set; }
 
         [ForeignKey("VendaId")]
-        [InverseProperty("VendaParcelas")]
+        [InverseProperty("Parcelas")]
         public virtual Venda? Venda { get; set; }
 
-        [InverseProperty("RotaCobrancaParcela")]
-        public virtual ICollection<RotaCobrancaParcela>? RotaCobrancaParcelas { get; set; }
+        [InverseProperty("Parcela")]
+        public virtual ICollection<Cobranca>? Cobrancas { get; set; }
 
-        public VendaParcela(
+        public Parcela(
             long vendaId,
             DateTime dataVencimento,
             decimal valor,
@@ -59,7 +59,7 @@ namespace Tecnica.Domain.Entities
             Status = status;
         }
 
-        public VendaParcela()
+        public Parcela()
         {
 
         }

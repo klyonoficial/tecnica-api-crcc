@@ -19,11 +19,11 @@ namespace Tecnica.Domain.Daos
     public DbSet<Observacao> Observacoes { get; set; }
     public DbSet<Produto> Produtos { get; set; }
     public DbSet<RotaCobranca> RotasCobranca { get; set; }
-    public DbSet<RotaCobrancaParcela> RotasCobrancaVenda { get; set; }
+    public DbSet<Cobranca> RotasCobrancaVenda { get; set; }
     public DbSet<RotaEntrega> RotasEntrega { get; set; }
-    public DbSet<RotaEntregaVenda> RotasEntregaVenda { get; set; }
+    public DbSet<Entrega> RotasEntregaVenda { get; set; }
     public DbSet<Venda> Vendas { get; set; }
-    public DbSet<VendaParcela> VendasParcela { get; set; }
-    public DbSet<VendaProduto> VendasProduto { get; set; }
+    public DbSet<Parcela> VendasParcela { get; set; }
+    public DbSet<Item> VendasProduto { get; set; }
     }
 }

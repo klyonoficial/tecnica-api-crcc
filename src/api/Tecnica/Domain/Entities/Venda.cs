@@ -64,13 +64,13 @@ namespace Tecnica.Domain.Entities
         public string? EnderecoTipo { get; set; }
 
         [InverseProperty("Venda")]
-        public virtual ICollection<VendaProduto>? VendaProdutos { get; set; }
+        public virtual ICollection<Item>? Items { get; set; }
 
         [InverseProperty("Venda")]
-        public virtual ICollection<RotaEntregaVenda>? RotaEntregaVendas { get; set; }
+        public virtual ICollection<Entrega>? Entregas { get; set; }
 
         [InverseProperty("Venda")]
-        public virtual ICollection<RotaCobrancaParcela>? RotaCobrancaParcelas { get; set; }
+        public virtual ICollection<Parcela>? Parcelas { get; set; }
 
         public Venda(
             DateTime dataCadastro,
@@ -78,7 +78,6 @@ namespace Tecnica.Domain.Entities
             long clienteId,
             long vendedorId,
             DateTime? dataEntrega,
-            decimal valorTotal,
             decimal? valorEntrada,
             int diaAcerto,
             int quantidadeParcelas,
@@ -89,13 +88,13 @@ namespace Tecnica.Domain.Entities
             string? enderecoUF,
             string? enderecoNumero,
             string? enderecoComplemento,
-            string? enderecoTipo)
+            string? enderecoTipo,
+            ICollection<Item>? vendaProdutos = null)
         {
             Assegure.NaoNulo(dataCadastro, "A data de cadastro deve ser informada.");
             Assegure.NaoNulo(status, "O status deve ser informado.");
             Assegure.Que(clienteId > 0, "O cliente deve ser informado.");
             Assegure.Que(vendedorId > 0, "O vendedor deve ser informado.");
-            Assegure.Que(valorTotal > 0, "O valor total deve ser informado.");
             Assegure.Que(diaAcerto > 0, "O dia de acerto deve ser informado.");
             Assegure.Que(quantidadeParcelas > 0, "A quantidade de parcelas deve ser informada.");
             Assegure.NaoNulo(enderecoCep, "O CEP do endereço deve ser informado.");
@@ -109,7 +108,7 @@ namespace Tecnica.Domain.Entities
             ClienteId = clienteId;
             VendedorId = vendedorId;
             DataEntrega = dataEntrega;
-            ValorTotal = valorTotal;
+            ValorTotal = vendaProdutos.Sum(vp => vp.Quantidade * vp.Preco);
             ValorEntrada = valorEntrada;
             DiaAcerto = diaAcerto;
             QuantidadeParcelas = quantidadeParcelas;
@@ -121,6 +120,8 @@ namespace Tecnica.Domain.Entities
             EnderecoNumero = enderecoNumero;
             EnderecoComplemento = enderecoComplemento;
             EnderecoTipo = enderecoTipo;
+            Items = vendaProdutos;
+            Parcelas = vendaParcelas;
         }
 
         // Construtor vazio para o Entity Framework

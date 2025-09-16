@@ -4,8 +4,8 @@ using Tecnica.Infra;
 
 namespace Tecnica.Domain.Entities
 {
-    [Table("rota_cobranca_venda")]
-    public class RotaCobrancaVenda
+    [Table("cobranca")]
+    public class Cobranca
     {
         [Key]
         [Column("id")]
@@ -14,35 +14,25 @@ namespace Tecnica.Domain.Entities
         [Column("rota_cobranca_id")]
         public long RotaCobrancaId { get; set; }
 
-        [Column("venda_id")]
-        public long VendaId { get; set; }
-
         [Column("parcela_id")]
         public long ParcelaId { get; set; }
 
-        public RotaCobrancaVenda(long rotaCobrancaId, long vendaId, long parcelaId)
+        public Cobranca(long rotaCobrancaId, long parcelaId)
         {
             Assegure.Que(rotaCobrancaId > 0, "A rota de cobrança deve ser informada.");
-            Assegure.Que(vendaId > 0, "A venda deve ser informada.");
             Assegure.Que(parcelaId > 0, "A parcela deve ser informada.");
             RotaCobrancaId = rotaCobrancaId;
-            VendaId = vendaId;
-            ParcelaId = parcelaId;
         }
 
         // Construtor vazio para o Entity Framework
-        public RotaCobrancaVenda() { }
+        public Cobranca() { }
 
         [ForeignKey("RotaCobrancaId")]
-        [InverseProperty("RotaCobrancaVendas")]
+        [InverseProperty("Cobrancas")]
         public virtual RotaCobranca? RotaCobranca { get; set; }
 
-        [ForeignKey("VendaId")]
-        [InverseProperty("RotaCobrancaVendas")]
-        public virtual Venda? Venda { get; set; }
-
         [ForeignKey("ParcelaId")]
-        [InverseProperty("RotaCobrancaVendas")]
-        public virtual VendaParcela? VendaParcela { get; set; }
+        [InverseProperty("Cobrancas")]
+        public virtual Parcela? Parcela { get; set; }
     }
 }

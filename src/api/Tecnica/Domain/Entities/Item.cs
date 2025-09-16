@@ -4,8 +4,8 @@ using Tecnica.Infra;
 
 namespace Tecnica.Domain.Entities
 {
-    [Table("venda_produto")]
-    public class VendaProduto
+    [Table("item")]
+    public class Item
     {
         [Key]
         [Column("id")]
@@ -27,10 +27,10 @@ namespace Tecnica.Domain.Entities
         public string? NumerosSerie { get; set; }
 
         [ForeignKey("VendaId")]
-        [InverseProperty("VendaProdutos")]
+        [InverseProperty("Items")]
         public virtual Venda? Venda { get; set; }
 
-        public VendaProduto(long vendaId, long produtoId, decimal preco, int quantidade, string? numerosSerie)
+        public Item(long vendaId, long produtoId, decimal preco, int quantidade, string? numerosSerie)
         {
             Assegure.Que(vendaId > 0, "A venda deve ser informada.");
             Assegure.Que(produtoId > 0, "O produto deve ser informado.");
@@ -46,6 +46,6 @@ namespace Tecnica.Domain.Entities
         }
 
         // Construtor vazio para o Entity Framework
-        public VendaProduto() { }
+        public Item() { }
     }
 }

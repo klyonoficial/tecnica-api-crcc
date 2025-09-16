@@ -17,7 +17,7 @@ namespace Tecnica.Domain.Entities
         public DateTime Data { get; set; }
 
         [InverseProperty("RotaEntrega")]
-        public virtual ICollection<RotaEntregaVenda>? RotaEntregaVendas { get; set; }
+        public virtual ICollection<Entrega>? Entregas { get; set; }
 
         public RotaEntrega(DateTime data)
         {

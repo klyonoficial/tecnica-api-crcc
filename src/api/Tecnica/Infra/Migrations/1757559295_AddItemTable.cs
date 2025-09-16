@@ -3,11 +3,11 @@ using FluentMigrator;
 namespace Tecnica.Infra.Migrations
 {
     [Migration(1757559295)]
-    public class AddVendaProdutoTable : Migration
+    public class AddItemTable : Migration
     {
         public override void Up()
         {
-            Create.Table("venda_produto")
+            Create.Table("item")
                 .WithColumn("id").AsInt64().PrimaryKey().Identity()
                 .WithColumn("venda_id").AsInt64().NotNullable()
                 .WithColumn("produto_id").AsInt64().NotNullable()
@@ -15,12 +15,12 @@ namespace Tecnica.Infra.Migrations
                 .WithColumn("quantidade").AsInt32().NotNullable()
                 .WithColumn("numeros_serie").AsCustom("text").Nullable();
 
-            Create.ForeignKey("fk_venda_produto_venda")
-                .FromTable("venda_produto").ForeignColumn("venda_id")
+            Create.ForeignKey("fk_item_venda")
+                .FromTable("item").ForeignColumn("venda_id")
                 .ToTable("venda").PrimaryColumn("id");
 
-            Create.ForeignKey("fk_venda_produto_produto")
-                .FromTable("venda_produto").ForeignColumn("produto_id")
+            Create.ForeignKey("fk_item_produto")
+                .FromTable("item").ForeignColumn("produto_id")
                 .ToTable("produto").PrimaryColumn("id");
         }
 
