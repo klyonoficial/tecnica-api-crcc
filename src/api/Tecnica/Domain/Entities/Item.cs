@@ -30,15 +30,14 @@ namespace Tecnica.Domain.Entities
         [InverseProperty("Items")]
         public virtual Venda? Venda { get; set; }
 
-        public Item(long vendaId, long produtoId, decimal preco, int quantidade, string? numerosSerie)
+        public Item(long produtoId, decimal preco, int quantidade, string? numerosSerie)
         {
-            Assegure.Que(vendaId > 0, "A venda deve ser informada.");
             Assegure.Que(produtoId > 0, "O produto deve ser informado.");
             Assegure.Que(preco > 0, "O preço deve ser informado.");
             Assegure.Que(quantidade > 0, "A quantidade deve ser informada.");
             Assegure.NaoNulo(numerosSerie, "Os números de série devem ser informados.");
 
-            VendaId = vendaId;
+            ProdutoId = produtoId;
             ProdutoId = produtoId;
             Preco = preco;
             Quantidade = quantidade;

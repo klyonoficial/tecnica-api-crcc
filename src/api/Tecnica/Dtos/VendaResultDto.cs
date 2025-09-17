@@ -20,8 +20,5 @@ namespace Tecnica.Domain.Dtos
         public string? EnderecoNumero { get; set; }
         public string? EnderecoComplemento { get; set; }
         public string? EnderecoTipo { get; set; }
-        
-        public List<VendaProdutoDto> Produtos { get; set; } = new();
-        public List<VendaParcelaDto> Parcelas { get; set; } = new();
     }
 }

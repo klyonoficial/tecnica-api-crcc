@@ -74,7 +74,6 @@ namespace Tecnica.Domain.Entities
 
         public Venda(
             DateTime dataCadastro,
-            string status,
             long clienteId,
             long vendedorId,
             DateTime? dataEntrega,
@@ -93,7 +92,6 @@ namespace Tecnica.Domain.Entities
             ICollection<Parcela>? parcelas)
         {
             Assegure.NaoNulo(dataCadastro, "A data de cadastro deve ser informada.");
-            Assegure.NaoNulo(status, "O status deve ser informado.");
             Assegure.Que(clienteId > 0, "O cliente deve ser informado.");
             Assegure.Que(vendedorId > 0, "O vendedor deve ser informado.");
             Assegure.Que(diaAcerto > 0, "O dia de acerto deve ser informado.");
@@ -103,9 +101,11 @@ namespace Tecnica.Domain.Entities
             Assegure.NaoNulo(enderecoUF, "A UF do endereço deve ser informada.");
             Assegure.NaoNulo(enderecoTipo, "O tipo do endereço deve ser informado.");
             Assegure.NaoNulo(enderecoCodigoIbge, "O código IBGE do endereço deve ser informado.");
+            Assegure.NaoNulo(items, "Os itens da venda devem ser informados.");
+            Assegure.NaoNulo(parcelas, "As parcelas da venda devem ser informadas.");
 
             DataCadastro = dataCadastro;
-            Status = status;
+            Status = nameof(DomainEnums.VendaStatus.CAD);
             ClienteId = clienteId;
             VendedorId = vendedorId;
             DataEntrega = dataEntrega;
@@ -130,5 +130,66 @@ namespace Tecnica.Domain.Entities
         {
 
         }
+
+        #region Métodos de Negócio
+
+        /// <summary>
+        /// Aprova a venda, alterando o status para APROV
+        /// </summary>
+        public void Aprovar()
+        {
+            Status = nameof(DomainEnums.VendaStatus.APROV);
+        }
+
+        /// <summary>
+        /// Reprova a venda, alterando o status para REPR
+        /// </summary>
+        public void Reprovar()
+        {
+            Status = nameof(DomainEnums.VendaStatus.REPR);
+        }
+
+        /// <summary>
+        /// Envia a venda para expedição, alterando o status para EXP
+        /// </summary>
+        public void Expedicao()
+        {
+            Status = nameof(DomainEnums.VendaStatus.EXP);
+        }
+
+        /// <summary>
+        /// Atualiza a data de entrega da venda
+        /// </summary>
+        /// <param name="novaDataEntrega">Nova data de entrega</param>
+        /// <param name="observacao">Observação opcional sobre o reagendamento</param>
+        public void Reagendar(DateTime? novaDataEntrega, string? observacao = null)
+        {
+            DataEntrega = novaDataEntrega;
+            if (!string.IsNullOrEmpty(observacao))
+            {
+                Observacao = observacao;
+            }
+        }
+
+        /// <summary>
+        /// Atualiza os dados da venda com base em um DTO
+        /// </summary>
+        public void Atualizar(DateTime? dataEntrega, decimal? valorEntrada, int diaAcerto, int quantidadeParcelas, string? observacao, string? enderecoCep, string? enderecoCodigoIbge, string? enderecoBairro, string? enderecoUF, string? enderecoNumero, string? enderecoComplemento, string? enderecoTipo)
+        {
+            DataEntrega = dataEntrega;
+            ValorEntrada = valorEntrada;
+            DiaAcerto = diaAcerto;
+            QuantidadeParcelas = quantidadeParcelas;
+            Observacao = observacao;
+            EnderecoCep = enderecoCep;
+            EnderecoCodigoIbge = enderecoCodigoIbge;
+            EnderecoBairro = enderecoBairro;
+            EnderecoUF = enderecoUF;
+            EnderecoNumero = enderecoNumero;
+            EnderecoComplemento = enderecoComplemento;
+            EnderecoTipo = enderecoTipo;
+        }
+
+        #endregion
     }
 }

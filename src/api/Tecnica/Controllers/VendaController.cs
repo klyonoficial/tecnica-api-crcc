@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Tecnica.Domain.Daos;
 using Tecnica.Domain.Dtos;
@@ -22,53 +23,10 @@ namespace Tecnica.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<VendaResultDto>>> GetVendas()
+        public async Task<ActionResult<IEnumerable<VendaResultDto>>> GetVendas([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
-            var vendas = await _vendaDao.ListarTodosAsync();
-            var vendasDto = vendas.Select(v => new VendaResultDto
-            {
-                Id = v.Id,
-                DataCadastro = v.DataCadastro,
-                Status = v.Status,
-                ClienteId = v.ClienteId,
-                VendedorId = v.VendedorId,
-                DataEntrega = v.DataEntrega,
-                ValorTotal = v.ValorTotal,
-                ValorEntrada = v.ValorEntrada,
-                DiaAcerto = v.DiaAcerto,
-                QuantidadeParcelas = v.QuantidadeParcelas,
-                Observacao = v.Observacao,
-                EnderecoCep = v.EnderecoCep,
-                EnderecoCodigoIbge = v.EnderecoCodigoIbge,
-                EnderecoBairro = v.EnderecoBairro,
-                EnderecoUF = v.EnderecoUF,
-                EnderecoNumero = v.EnderecoNumero,
-                EnderecoComplemento = v.EnderecoComplemento,
-                EnderecoTipo = v.EnderecoTipo,
-                Produtos = v.Items?.Select(i => new VendaProdutoDto
-                {
-                    Id = i.Id,
-                    VendaId = i.VendaId,
-                    ProdutoId = i.ProdutoId,
-                    Preco = i.Preco,
-                    Quantidade = i.Quantidade,
-                    NumerosSerie = i.NumerosSerie
-                }).ToList() ?? new List<VendaProdutoDto>(),
-                Parcelas = v.Parcelas?.Select(p => new VendaParcelaDto
-                {
-                    Id = p.Id,
-                    VendaId = p.VendaId,
-                    DataVencimento = p.DataVencimento,
-                    DataPagamento = p.DataPagamento,
-                    Valor = p.Valor,
-                    ValorPago = p.ValorPago,
-                    Status = p.Status,
-                    DataRemanejamento = p.DataRemanejamento,
-                    FormaPagamentoId = p.FormaPagamentoId
-                }).ToList() ?? new List<VendaParcelaDto>()
-            }).ToList();
-
-            return Ok(vendasDto);
+            var vendas = await _vendaDao.ListarTodosAsync(pageNumber, pageSize);
+            return Ok(vendas);
         }
 
         [HttpGet("{id}")]
@@ -77,7 +35,7 @@ namespace Tecnica.Api.Controllers
             var venda = await _vendaDao.ObterPorIdAsync(id);
             if (venda == null)
             {
-                return NotFound(new { message = "Venda não encontrada." });
+                return NotFound();
             }
 
             var vendaDto = new VendaResultDto
@@ -99,28 +57,7 @@ namespace Tecnica.Api.Controllers
                 EnderecoUF = venda.EnderecoUF,
                 EnderecoNumero = venda.EnderecoNumero,
                 EnderecoComplemento = venda.EnderecoComplemento,
-                EnderecoTipo = venda.EnderecoTipo,
-                Produtos = venda.Items?.Select(i => new VendaProdutoDto
-                {
-                    Id = i.Id,
-                    VendaId = i.VendaId,
-                    ProdutoId = i.ProdutoId,
-                    Preco = i.Preco,
-                    Quantidade = i.Quantidade,
-                    NumerosSerie = i.NumerosSerie
-                }).ToList() ?? new List<VendaProdutoDto>(),
-                Parcelas = venda.Parcelas?.Select(p => new VendaParcelaDto
-                {
-                    Id = p.Id,
-                    VendaId = p.VendaId,
-                    DataVencimento = p.DataVencimento,
-                    DataPagamento = p.DataPagamento,
-                    Valor = p.Valor,
-                    ValorPago = p.ValorPago,
-                    Status = p.Status,
-                    DataRemanejamento = p.DataRemanejamento,
-                    FormaPagamentoId = p.FormaPagamentoId
-                }).ToList() ?? new List<VendaParcelaDto>()
+                EnderecoTipo = venda.EnderecoTipo
             };
 
             return Ok(vendaDto);
@@ -131,7 +68,6 @@ namespace Tecnica.Api.Controllers
         {
             // Criar os itens da venda
             var items = vendaDto.Produtos.Select(p => new Item(
-                0, // VendaId será definido depois
                 p.ProdutoId,
                 p.Preco,
                 p.Quantidade,
@@ -140,7 +76,6 @@ namespace Tecnica.Api.Controllers
 
             // Criar as parcelas da venda
             var parcelas = vendaDto.Parcelas.Select(p => new Parcela(
-                0, // VendaId será definido depois
                 p.DataVencimento,
                 p.Valor,
                 p.Status
@@ -149,7 +84,6 @@ namespace Tecnica.Api.Controllers
             // Criar a venda
             var venda = new Venda(
                 DateTime.Now,
-                vendaDto.Status,
                 vendaDto.ClienteId,
                 vendaDto.VendedorId,
                 vendaDto.DataEntrega,
@@ -181,42 +115,27 @@ namespace Tecnica.Api.Controllers
             var vendaExistente = await _vendaDao.ObterPorIdAsync(id);
             if (vendaExistente == null)
             {
-                return NotFound(new { message = "Venda não encontrada." });
+                return NotFound();
             }
 
-            // Atualizar propriedades básicas
-            vendaExistente.Status = vendaDto.Status;
-            vendaExistente.DataEntrega = vendaDto.DataEntrega;
-            vendaExistente.ValorEntrada = vendaDto.ValorEntrada;
-            vendaExistente.DiaAcerto = vendaDto.DiaAcerto;
-            vendaExistente.QuantidadeParcelas = vendaDto.QuantidadeParcelas;
-            vendaExistente.Observacao = vendaDto.Observacao;
-            vendaExistente.EnderecoCep = vendaDto.EnderecoCep;
-            vendaExistente.EnderecoCodigoIbge = vendaDto.EnderecoCodigoIbge;
-            vendaExistente.EnderecoBairro = vendaDto.EnderecoBairro;
-            vendaExistente.EnderecoUF = vendaDto.EnderecoUF;
-            vendaExistente.EnderecoNumero = vendaDto.EnderecoNumero;
-            vendaExistente.EnderecoComplemento = vendaDto.EnderecoComplemento;
-            vendaExistente.EnderecoTipo = vendaDto.EnderecoTipo;
+            vendaExistente.Atualizar(
+                vendaDto.DataEntrega,
+                vendaDto.ValorEntrada,
+                vendaDto.DiaAcerto,
+                vendaDto.QuantidadeParcelas,
+                vendaDto.Observacao,
+                vendaDto.EnderecoCep,
+                vendaDto.EnderecoCodigoIbge,
+                vendaDto.EnderecoBairro,
+                vendaDto.EnderecoUF,
+                vendaDto.EnderecoNumero,
+                vendaDto.EnderecoComplemento,
+                vendaDto.EnderecoTipo
+            );
 
             await _context.SaveChangesAsync();
 
             return Ok(vendaDto);
-        }
-
-        [HttpPut("{id}/aprovacao")]
-        public async Task<ActionResult> AprovarVenda(long id)
-        {
-            var venda = await _vendaDao.ObterPorIdAsync(id);
-            if (venda == null)
-            {
-                return NotFound(new { message = "Venda não encontrada." });
-            }
-
-            venda.Status = nameof(DomainEnums.VendaStatus.APROV);
-            await _context.SaveChangesAsync();
-
-            return Ok(new { message = "Venda aprovada com sucesso." });
         }
 
         [HttpPut("{id}/aprovar")]
@@ -225,13 +144,13 @@ namespace Tecnica.Api.Controllers
             var venda = await _vendaDao.ObterPorIdAsync(id);
             if (venda == null)
             {
-                return NotFound(new { message = "Venda não encontrada." });
+                return NotFound();
             }
 
-            venda.Status = nameof(DomainEnums.VendaStatus.APROV);
+            venda.Aprovar();
             await _context.SaveChangesAsync();
 
-            return Ok(new { message = "Venda aprovada com sucesso." });
+            return Ok();
         }
 
         [HttpPut("{id}/reagendar")]
@@ -240,18 +159,13 @@ namespace Tecnica.Api.Controllers
             var venda = await _vendaDao.ObterPorIdAsync(id);
             if (venda == null)
             {
-                return NotFound(new { message = "Venda não encontrada." });
+                return NotFound();
             }
 
-            venda.DataEntrega = vendaReagendarDto.NovaDataEntrega;
-            if (!string.IsNullOrEmpty(vendaReagendarDto.Observacao))
-            {
-                venda.Observacao = vendaReagendarDto.Observacao;
-            }
-
+            venda.Reagendar(vendaReagendarDto.NovaDataEntrega, vendaReagendarDto.Observacao);
             await _context.SaveChangesAsync();
 
-            return Ok(new { message = "Venda reagendada com sucesso." });
+            return Ok();
         }
 
         [HttpPut("{id}/expedicao")]
@@ -260,13 +174,13 @@ namespace Tecnica.Api.Controllers
             var venda = await _vendaDao.ObterPorIdAsync(id);
             if (venda == null)
             {
-                return NotFound(new { message = "Venda não encontrada." });
+                return NotFound();
             }
 
-            venda.Status = nameof(DomainEnums.VendaStatus.EXP);
+            venda.Expedicao();
             await _context.SaveChangesAsync();
 
-            return Ok(new { message = "Venda enviada para expedição com sucesso." });
+            return Ok();
         }
 
         [HttpPut("{id}/reprovar")]
@@ -275,13 +189,13 @@ namespace Tecnica.Api.Controllers
             var venda = await _vendaDao.ObterPorIdAsync(id);
             if (venda == null)
             {
-                return NotFound(new { message = "Venda não encontrada." });
+                return NotFound();
             }
 
-            venda.Status = nameof(DomainEnums.VendaStatus.REPR);
+            venda.Reprovar();
             await _context.SaveChangesAsync();
 
-            return Ok(new { message = "Venda reprovada com sucesso." });
+            return Ok();
         }
     }
 }

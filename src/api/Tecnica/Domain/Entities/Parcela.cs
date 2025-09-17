@@ -44,16 +44,13 @@ namespace Tecnica.Domain.Entities
         public virtual ICollection<Cobranca>? Cobrancas { get; set; }
 
         public Parcela(
-            long vendaId,
             DateTime dataVencimento,
             decimal valor,
             string status)
         {
-            Assegure.Que(vendaId > 0, "A venda deve ser informada.");
             Assegure.NaoNulo(dataVencimento, "A data de vencimento deve ser informada.");
             Assegure.Que(valor > 0, "O valor deve ser informado.");
 
-            VendaId = vendaId;
             DataVencimento = dataVencimento;
             Valor = valor;
             Status = status;
