@@ -11,11 +11,10 @@ namespace Tecnica.Domain.Entities
         public long Id { get; private set; }
 
         [Column("nome")]
-        [Required]
         public string Nome { get; private set; }
 
         [InverseProperty("Fornecedor")]
-        public virtual ICollection<Produto>? Produtos { get; set; }
+        public virtual ICollection<Produto> Produtos { get; set; }
 
         private Fornecedor() { }
 

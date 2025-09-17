@@ -64,13 +64,13 @@ namespace Tecnica.Domain.Entities
         public string? EnderecoTipo { get; set; }
 
         [InverseProperty("Venda")]
-        public virtual ICollection<Item>? Items { get; set; }
+        public virtual ICollection<Item> Items { get; set; }
 
         [InverseProperty("Venda")]
-        public virtual ICollection<Entrega>? Entregas { get; set; }
+        public virtual ICollection<Entrega> Entregas { get; set; }
 
         [InverseProperty("Venda")]
-        public virtual ICollection<Parcela>? Parcelas { get; set; }
+        public virtual ICollection<Parcela> Parcelas { get; set; }
 
         public Venda(
             DateTime dataCadastro,
@@ -89,7 +89,8 @@ namespace Tecnica.Domain.Entities
             string? enderecoNumero,
             string? enderecoComplemento,
             string? enderecoTipo,
-            ICollection<Item>? vendaProdutos = null)
+            ICollection<Item>? items,
+            ICollection<Parcela>? parcelas)
         {
             Assegure.NaoNulo(dataCadastro, "A data de cadastro deve ser informada.");
             Assegure.NaoNulo(status, "O status deve ser informado.");
@@ -108,7 +109,7 @@ namespace Tecnica.Domain.Entities
             ClienteId = clienteId;
             VendedorId = vendedorId;
             DataEntrega = dataEntrega;
-            ValorTotal = vendaProdutos.Sum(vp => vp.Quantidade * vp.Preco);
+            ValorTotal = items.Sum(vp => vp.Quantidade * vp.Preco);
             ValorEntrada = valorEntrada;
             DiaAcerto = diaAcerto;
             QuantidadeParcelas = quantidadeParcelas;
@@ -120,8 +121,8 @@ namespace Tecnica.Domain.Entities
             EnderecoNumero = enderecoNumero;
             EnderecoComplemento = enderecoComplemento;
             EnderecoTipo = enderecoTipo;
-            Items = vendaProdutos;
-            Parcelas = vendaParcelas;
+            Items = items;
+            Parcelas = parcelas;
         }
 
         // Construtor vazio para o Entity Framework

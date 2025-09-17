@@ -25,7 +25,6 @@ namespace Tecnica.Infra.Migrations
 
         public override void Down()
         {
-            Delete.Table("endereco");
         }
     }
 }

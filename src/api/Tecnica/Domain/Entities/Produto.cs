@@ -21,7 +21,6 @@ namespace Tecnica.Domain.Entities
         [InverseProperty("Produtos")]
         public Fornecedor Fornecedor { get; private set; }
 
-        // Construtor requerido pelo Entity Framework
         private Produto() { }
 
         public Produto(string nome, Fornecedor fornecedor)
