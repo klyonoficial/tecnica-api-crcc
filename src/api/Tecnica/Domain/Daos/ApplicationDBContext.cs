@@ -10,6 +10,13 @@ namespace Tecnica.Domain.Daos
         {
         }
 
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+{
+    modelBuilder.Entity<Pessoa>()
+        .HasDiscriminator<string>("tipo")
+        .HasValue<Cliente>("cliente");
+}
+
     public DbSet<Usuario> Usuarios { get; set; }
     public DbSet<Arquivo> Arquivos { get; set; }
     public DbSet<Cliente> Clientes { get; set; }
@@ -25,5 +32,7 @@ namespace Tecnica.Domain.Daos
     public DbSet<Venda> Vendas { get; set; }
     public DbSet<Parcela> VendasParcela { get; set; }
     public DbSet<Item> VendasProduto { get; set; }
+    public DbSet<Componente> Componentes { get; set; }
+    public DbSet<Permissao> Permissoes { get; set; }
     }
 }

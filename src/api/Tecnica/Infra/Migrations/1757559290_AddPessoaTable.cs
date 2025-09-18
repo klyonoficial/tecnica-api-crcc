@@ -7,23 +7,24 @@ namespace Tecnica.Infra.Migrations
     {
         public override void Up()
         {
-            Create.Table("cliente")
+            Create.Table("pessoa")
                 .WithColumn("id").AsInt64().PrimaryKey().Identity()
-                .WithColumn("vendedor_id").AsInt64().NotNullable()
-                .WithColumn("cpf_cnpj").AsCustom("varchar(20)").NotNullable()
+                .WithColumn("tipo").AsCustom("varchar(10)").NotNullable()
+                .WithColumn("vendedor_id").AsInt64().Nullable()
+                .WithColumn("cpf_cnpj").AsCustom("varchar(20)").Nullable()
                 .WithColumn("razao_social").AsCustom("varchar(200)").NotNullable()
                 .WithColumn("nome_fantasia").AsCustom("varchar(200)").Nullable()
                 .WithColumn("contato").AsCustom("varchar(200)").Nullable()
                 .WithColumn("telefone_ddd").AsCustom("varchar(4)").Nullable()
                 .WithColumn("telefone_numero").AsCustom("varchar(20)").Nullable()
-                .WithColumn("dia_cobranca").AsInt32().NotNullable()
-                .WithColumn("status").AsCustom("varchar(10)").NotNullable()
+                .WithColumn("dia_cobranca").AsInt32().Nullable()
+                .WithColumn("status").AsCustom("varchar(10)").Nullable()
                 .WithColumn("data_aprovou").AsDateTime().Nullable()
                 .WithColumn("data_cadastro").AsDateTime().NotNullable()
                 .WithColumn("dados_serasa").AsCustom("text").Nullable();
 
-            Create.ForeignKey("fk_cliente_vendedor")
-                .FromTable("cliente").ForeignColumn("vendedor_id")
+            Create.ForeignKey("fk_pessoa_vendedor")
+                .FromTable("pessoa").ForeignColumn("vendedor_id")
                 .ToTable("usuario").PrimaryColumn("id");
         }
 

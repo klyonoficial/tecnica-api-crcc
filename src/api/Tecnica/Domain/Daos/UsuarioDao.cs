@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Tecnica.Domain.Entities;
+using Tecnica.Dtos;
 
 namespace Tecnica.Domain.Daos
 {
@@ -33,6 +34,31 @@ namespace Tecnica.Domain.Daos
         public async Task RemoverAsync(Usuario usuario)
         {
             _context.Set<Usuario>().Remove(usuario);
+        }
+
+        public async Task<List<PermissaoDto>> ObterPermissoesAsync(long usuarioId)
+        {
+            var permissoesUsuario = await _context.Set<Permissao>()
+                .Where(p => p.UsuarioId == usuarioId)
+                .Select(p => p.ComponenteId)
+                .ToListAsync();
+
+            var componentes = await _context.Set<Componente>()
+                .Where(c => c.Ativo)
+                .ToListAsync();
+
+            var permissoesDto = componentes.Select(c => new PermissaoDto
+            {
+                Id = c.Id,
+                Nome = c.Nome,
+                Ordem = c.Ordem,
+                Descricao = c.Descricao,
+                Tipo = c.Tipo,
+                Codigo = c.Codigo,
+                PossuiPermissao = permissoesUsuario.Contains(c.Id)
+            }).ToList();
+
+            return permissoesDto;
         }
     }
 }

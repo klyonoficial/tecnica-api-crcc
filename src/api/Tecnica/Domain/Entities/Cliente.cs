@@ -7,8 +7,7 @@ using Tecnica.Infra;
 
 namespace Tecnica.Domain.Entities
 {
-    [Table("cliente")]
-    public class Cliente
+    public class Cliente : Pessoa
     {
         [Key]
         [Column("id")]
