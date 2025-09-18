@@ -33,8 +33,9 @@ namespace Tecnica.Domain.Entities
             NPAG
         }
 
-        public enum RotaEntregaVendaStatus
+        public enum EntregaStatus
         {
+            PEND,
             ENTR,
             NENTR
         }

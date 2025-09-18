@@ -15,7 +15,7 @@ namespace Tecnica.Domain.Daos
             _context = context;
         }
 
-        public async Task<Cliente> ObterPorIdAsync(long id)
+        public async Task<Cliente?> ObterPorIdAsync(long id)
         {
             return await _context.Set<Cliente>().FindAsync(id);
         }
@@ -50,7 +50,7 @@ namespace Tecnica.Domain.Daos
             await _context.Set<Cliente>().AddAsync(cliente);
         }
 
-        public async Task RemoverAsync(Cliente cliente)
+        public void RemoverAsync(Cliente cliente)
         {
             _context.Set<Cliente>().Remove(cliente);
         }

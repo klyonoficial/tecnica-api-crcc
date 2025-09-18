@@ -55,6 +55,9 @@ namespace Tecnica.Domain.Entities
 
         [InverseProperty("Cliente")]
         public virtual ICollection<Arquivo> Arquivos { get; set; }
+        
+        [InverseProperty("Cliente")]
+        public virtual ICollection<Venda> Vendas { get; set; }
 
         public Cliente(
             long vendedorId,
@@ -73,7 +76,7 @@ namespace Tecnica.Domain.Entities
             Assegure.NaoNulo(cpfCnpj, "O CPF/CNPJ deve ser informado.");
             Assegure.NaoNulo(razaoSocial, "A razão social deve ser informada.");
             Assegure.Que(diaCobranca > 0, "O dia de cobrança deve ser informado.");
-           
+
             VendedorId = vendedorId;
             CpfCnpj = cpfCnpj;
             RazaoSocial = razaoSocial;

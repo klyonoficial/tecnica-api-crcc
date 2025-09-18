@@ -8,5 +8,7 @@ namespace Tecnica.Domain.Dtos
         public long? AprovadorId { get; set; }
         public decimal TotalReceber { get; set; }
         public decimal? TotalRecebido { get; set; }
+
+        public List<CobrancaDto> Cobrancas { get; set; } = new List<CobrancaDto>();
     }
 }

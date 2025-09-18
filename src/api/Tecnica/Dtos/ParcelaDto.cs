@@ -1,6 +1,6 @@
 namespace Tecnica.Domain.Dtos
 {
-    public class VendaParcelaDto
+    public class ParcelaDto
     {
         public long Id { get; set; }
         public long VendaId { get; set; }

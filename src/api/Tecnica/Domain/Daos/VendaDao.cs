@@ -62,5 +62,11 @@ namespace Tecnica.Domain.Daos
         {
             _context.Set<Venda>().Remove(venda);
         }
+
+        internal List<Venda> ObterPorDataEntrega(DateTime dataEntrega)
+        {
+            return _context.Set<Venda>()
+            .Where(v => v.DataEntrega.HasValue && v.DataEntrega.Value.Date == dataEntrega.Date).ToList();
+        }
     }
 }

@@ -72,6 +72,10 @@ namespace Tecnica.Domain.Entities
         [InverseProperty("Venda")]
         public virtual ICollection<Parcela> Parcelas { get; set; }
 
+        [ForeignKey("ClienteId")]
+        [InverseProperty("Vendas")]
+        public virtual Cliente Cliente { get; set; }
+
         public Venda(
             DateTime dataCadastro,
             long clienteId,
@@ -188,6 +192,11 @@ namespace Tecnica.Domain.Entities
             EnderecoNumero = enderecoNumero;
             EnderecoComplemento = enderecoComplemento;
             EnderecoTipo = enderecoTipo;
+        }
+
+        internal void Entregue()
+        {
+            Status = nameof(DomainEnums.VendaStatus.ENTR);
         }
 
         #endregion

@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Tecnica.Infra;
+using static Tecnica.Domain.Entities.DomainEnums;
 
 namespace Tecnica.Domain.Entities
 {
@@ -28,14 +29,13 @@ namespace Tecnica.Domain.Entities
         [InverseProperty("Entregas")]
         public virtual Venda? Venda { get; set; }
 
-        public Entrega(long rotaEntregaId, long vendaId)
+        public Entrega(long vendaId)
         {
-            Assegure.Que(rotaEntregaId > 0, "A rota de entrega deve ser informada.");
             Assegure.Que(vendaId > 0, "A venda deve ser informada.");
 
-            RotaEntregaId = rotaEntregaId;
             VendaId = vendaId;
-            Status = null;
+            VendaId = vendaId;
+            Status = EntregaStatus.PEND.ToString();
         }
 
         // Construtor vazio para o Entity Framework
