@@ -9,6 +9,7 @@ namespace Tecnica.Infra.Migrations
         {
             Create.Table("componente")
                 .WithColumn("id").AsInt64().PrimaryKey().Identity()
+                .WithColumn("codigo").AsCustom("varchar(200)").NotNullable()
                 .WithColumn("nome").AsCustom("varchar(100)").NotNullable()
                 .WithColumn("descricao").AsCustom("varchar(255)").Nullable()
                 .WithColumn("tipo").AsCustom("varchar(1)").NotNullable()
