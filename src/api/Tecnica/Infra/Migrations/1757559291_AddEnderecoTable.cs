@@ -11,6 +11,7 @@ namespace Tecnica.Infra.Migrations
                 .WithColumn("id").AsInt64().PrimaryKey().Identity()
                 .WithColumn("cliente_id").AsInt64().NotNullable()
                 .WithColumn("cep").AsCustom("varchar(10)").NotNullable()
+                .WithColumn("logradouro").AsCustom("varchar(300)").Nullable()
                 .WithColumn("codigo_ibge").AsCustom("varchar(20)").Nullable()
                 .WithColumn("bairro").AsCustom("varchar(200)").Nullable()
                 .WithColumn("UF").AsCustom("varchar(2)").Nullable()

@@ -1,7 +1,9 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Tecnica.Domain.Dtos;
 using Tecnica.Infra;
+using static Tecnica.Domain.Entities.DomainEnums;
 
 namespace Tecnica.Domain.Entities
 {
@@ -45,20 +47,57 @@ namespace Tecnica.Domain.Entities
 
         public Parcela(
             DateTime dataVencimento,
-            decimal valor,
-            string status)
+            decimal valor)
         {
             Assegure.NaoNulo(dataVencimento, "A data de vencimento deve ser informada.");
             Assegure.Que(valor > 0, "O valor deve ser informado.");
 
             DataVencimento = dataVencimento;
             Valor = valor;
-            Status = status;
+            Status = ParcelaStatus.ABT.ToString();
         }
 
         public Parcela()
         {
+        }
 
+        public Parcela InformarPagamento(PagamentoParcelaDto pagamento)
+        {
+            if (pagamento.NaoPagou)
+            {
+                Assegure.Que(pagamento.DataRemanejamento.HasValue, "A data de remanejamento deve ser informada.");
+
+                Status = ParcelaStatus.NPAG.ToString();
+                DataRemanejamento = pagamento.DataRemanejamento;
+                DataVencimento = pagamento.DataRemanejamento.Value;
+                return null;
+            }
+            else
+            {
+                Assegure.Que(pagamento.FormaPagamentoId > 0, "A forma de pagamento deve ser informada.");
+                Assegure.Que(pagamento.ValorPago > 0, "O valor pago deve ser informado.");
+
+                FormaPagamentoId = pagamento.FormaPagamentoId;
+                ValorPago = pagamento.ValorPago;
+                DataPagamento = DateTime.Now;
+
+                if (pagamento.ValorPago < Valor)
+                {
+                    Assegure.Que(pagamento.DataRemanejamento.HasValue, "A data de remanejamento deve ser informada.");
+                    Status = ParcelaStatus.PARC.ToString();
+                    DataRemanejamento = pagamento.DataRemanejamento;
+                    var parcelaRemanejada = new Parcela(
+                        pagamento.DataRemanejamento.Value,
+                        Valor - pagamento.ValorPago);
+                    Venda.AdicionarParcela(parcelaRemanejada);
+                    return parcelaRemanejada;
+                }
+                else
+                {
+                    Status = ParcelaStatus.PAG.ToString();
+                    return null;
+                }
+            }
         }
     }
 }

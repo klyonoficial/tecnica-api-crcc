@@ -1,9 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Tecnica.Domain.Daos;
 using Tecnica.Domain.Dtos;
 using Tecnica.Domain.Entities;
+using Tecnica.Dtos;
 using Tecnica.Infra;
 
 namespace Tecnica.Api.Controllers
@@ -146,28 +148,40 @@ namespace Tecnica.Api.Controllers
         }
 
         /// <summary>
-        /// Lista as entregas para um dia específico
+        /// Lista as Rotas entregas para um dia específico
         /// </summary>
         /// <param name="data">Data no formato yyyy-MM-dd</param>
         /// <returns>Lista de entregas do dia</returns>
-        [HttpGet("por-data/{data}")]
-        public async Task<ActionResult<RotaEntregaDto>> GetEntregasPorData(DateTime data)
+        [HttpGet("data/{data}")]
+        public async Task<ActionResult<List<RotaEntregaDto>>> GetRotaEntregasPorData(DateTime data)
         {
-            var rotaEntrega = await _rotaEntregaDao.ObterPorDataAsync(data);
-            if (rotaEntrega != null)
+            var rotaEntregas = await _rotaEntregaDao.ObterPorDataAsync(data);
+            return Ok(RotaEntregasToDto(rotaEntregas));
+        }
+
+        [HttpGet("data/{data}/entregas")]
+        public async Task<ActionResult<List<RotaEntregaDto>>> GetEntregasPorData(DateTime data)
+        {
+            var rotaEntregas = await _rotaEntregaDao.ListarEntregasEmAberto(data);
+            return Ok(RetornarEntregasDasVendas(rotaEntregas));
+        }
+
+        private static List<RotaEntregaDto> RotaEntregasToDto(List<RotaEntrega> rotaEntregas)
+        {
+            var entregas = new List<RotaEntregaDto>();
+
+            foreach (var rotaEntrega in rotaEntregas)
             {
-                 RotaEntregaDto rotaEntregaItemsDto = RetornarEntregasDataRota(rotaEntrega);
-                return Ok(rotaEntregaItemsDto);
+                var rotaEntregaItemsDto = new RotaEntregaDto
+                {
+                    Id = rotaEntrega.Id,
+                    Data = rotaEntrega.Data
+                };
+
+                entregas.Add(rotaEntregaItemsDto);
             }
 
-            var vendas = _vendaDao.ObterPorDataEntrega(data);
-            if (vendas.Any())
-            {
-                RotaEntregaDto rotaEntregaItemsDto = RetornarEntregasDasVendas(data, vendas);
-                return Ok(rotaEntregaItemsDto);
-            }
-
-            return NotFound(new { mensagem = "Nenhuma venda encontrada para esta data" });
+            return entregas;
         }
 
         private static RotaEntregaDto RetornarEntregasDataRota(RotaEntrega rotaEntrega)
@@ -201,7 +215,7 @@ namespace Tecnica.Api.Controllers
             return rotaEntregaItemsDto;
         }
 
-         private static RotaEntregaDto RetornarEntregasDasVendas(DateTime dataEntrega, List<Venda> vendas)
+        private static List<EntregaDto> RetornarEntregasDasVendas(List<Venda> vendas)
         {
             var entregas = new List<EntregaDto>();
 
@@ -224,13 +238,7 @@ namespace Tecnica.Api.Controllers
                 entregas.Add(entrega);
             }
 
-            var rotaEntregaItemsDto = new RotaEntregaDto
-            {
-                Id = null,
-                Data = dataEntrega,
-                Entregas = entregas
-            };
-            return rotaEntregaItemsDto;
+            return entregas;
         }
 
         /// <summary>
@@ -289,6 +297,35 @@ namespace Tecnica.Api.Controllers
             await _context.SaveChangesAsync();
 
             return Ok();
+        }
+
+        /// <summary>
+        /// Retorna a quantidade de entregas agrupadas por data dentro de um período especificado.
+        /// </summary>
+        /// <param name="dataInicio">Data inicial da pesquisa (obrigatória)</param>
+        /// <param name="dataFim">Data final da pesquisa (obrigatória)</param>
+        /// <returns>Lista de entregas agrupadas por data com a quantidade</returns>
+        [HttpGet("periodo")]
+        public async Task<ActionResult<IEnumerable<EntregaPorDataDto>>> GetVendasPorPeriodo(
+            [FromQuery] DateTime dataInicio,
+            [FromQuery] DateTime dataFim)
+        {
+            // Valida se ambas as datas foram fornecidas
+            if (dataInicio == DateTime.MinValue || dataFim == DateTime.MinValue)
+            {
+                return BadRequest("As datas de início e fim são obrigatórias.");
+            }
+
+            // Verifica se a data inicial é menor ou igual à data final
+            if (dataInicio > dataFim)
+            {
+                return BadRequest("A data inicial deve ser menor ou igual à data final.");
+            }
+
+            // Busca as entregas agrupadas por data
+            var entregas = await _vendaDao.ListarEntregasPorPeriodoAsync(dataInicio, dataFim);
+            
+            return Ok(entregas);
         }
     }
 }

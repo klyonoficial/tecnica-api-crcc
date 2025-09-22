@@ -1,9 +1,12 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Tecnica.Domain.Entities;
 using Tecnica.Domain.Dtos;
+using Tecnica.Dtos;
+using static Tecnica.Domain.Entities.DomainEnums;
 
 namespace Tecnica.Domain.Daos
 {
@@ -67,6 +70,45 @@ namespace Tecnica.Domain.Daos
         {
             return _context.Set<Venda>()
             .Where(v => v.DataEntrega.HasValue && v.DataEntrega.Value.Date == dataEntrega.Date).ToList();
+        }
+
+        /// <summary>
+        /// Obtém vendas com parcelas em aberto que vencem na data especificada
+        /// </summary>
+        /// <param name="dataVencimento">Data de vencimento das parcelas a filtrar</param>
+        /// <returns>Lista de vendas com parcelas em aberto na data especificada</returns>
+        public async Task<List<Parcela>> ObterParcelasEmAberto(DateTime dataVencimento)
+        {
+            return await _context.Set<Parcela>()
+                .Include(p => p.Venda)
+                .Where(p => p.DataVencimento.Date == dataVencimento.Date && 
+                             p.Status != ParcelaStatus.PAG.ToString())
+                .ToListAsync();
+        }
+        
+        /// <summary>
+        /// Lista entregas agrupadas por data dentro de um período especificado
+        /// </summary>
+        /// <param name="dataInicio">Data inicial do período</param>
+        /// <param name="dataFim">Data final do período</param>
+        /// <returns>Lista de entregas agrupadas por data com suas quantidades</returns>
+        public async Task<List<EntregaPorDataDto>> ListarEntregasPorPeriodoAsync(DateTime dataInicio, DateTime dataFim)
+        {
+            // Buscamos as vendas que têm data de entrega no período informado
+            var entregas = await _context.Set<Venda>()
+                .Where(v => v.DataEntrega.HasValue && 
+                      v.DataEntrega.Value.Date >= dataInicio.Date && 
+                      v.DataEntrega.Value.Date <= dataFim.Date)
+                .GroupBy(v => v.DataEntrega!.Value.Date)
+                .Select(g => new EntregaPorDataDto
+                {
+                    Data = g.Key,
+                    Quantidade = g.Count()
+                })
+                .OrderBy(dto => dto.Data)
+                .ToListAsync();
+
+            return entregas;
         }
     }
 }

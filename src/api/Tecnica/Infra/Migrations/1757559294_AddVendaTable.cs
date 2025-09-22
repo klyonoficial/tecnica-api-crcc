@@ -20,6 +20,7 @@ namespace Tecnica.Infra.Migrations
                 .WithColumn("quantidade_parcelas").AsInt32().NotNullable()
                 .WithColumn("observacao").AsCustom("text").Nullable()
                 .WithColumn("endereco_cep").AsCustom("varchar(10)").Nullable()
+                .WithColumn("endereco_logradouro").AsCustom("varchar(300)").Nullable()
                 .WithColumn("endereco_codigo_ibge").AsCustom("varchar(20)").Nullable()
                 .WithColumn("endereco_bairro").AsCustom("varchar(200)").Nullable()
                 .WithColumn("endereco_UF").AsCustom("varchar(2)").Nullable()

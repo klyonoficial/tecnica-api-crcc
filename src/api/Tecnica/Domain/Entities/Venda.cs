@@ -42,6 +42,10 @@ namespace Tecnica.Domain.Entities
         [Column("observacao")]
         public string? Observacao { get; set; }
 
+
+        [Column("endereco_logradouro")]
+        public string? EnderecoLogradouro { get; set; }
+
         [Column("endereco_cep")]
         public string? EnderecoCep { get; set; }
 
@@ -64,17 +68,17 @@ namespace Tecnica.Domain.Entities
         public string? EnderecoTipo { get; set; }
 
         [InverseProperty("Venda")]
-        public virtual ICollection<Item> Items { get; set; }
+        public virtual ICollection<Item>? Items { get; set; }
 
         [InverseProperty("Venda")]
-        public virtual ICollection<Entrega> Entregas { get; set; }
+        public virtual ICollection<Entrega>? Entregas { get; set; }
 
         [InverseProperty("Venda")]
-        public virtual ICollection<Parcela> Parcelas { get; set; }
+        public virtual ICollection<Parcela>? Parcelas { get; set; }
 
         [ForeignKey("ClienteId")]
         [InverseProperty("Vendas")]
-        public virtual Cliente Cliente { get; set; }
+        public virtual Cliente? Cliente { get; set; }
 
         public Venda(
             DateTime dataCadastro,
@@ -86,6 +90,7 @@ namespace Tecnica.Domain.Entities
             int quantidadeParcelas,
             string? observacao,
             string? enderecoCep,
+            string? enderecoLogradouro,
             string? enderecoCodigoIbge,
             string? enderecoBairro,
             string? enderecoUF,
@@ -101,6 +106,7 @@ namespace Tecnica.Domain.Entities
             Assegure.Que(diaAcerto > 0, "O dia de acerto deve ser informado.");
             Assegure.Que(quantidadeParcelas > 0, "A quantidade de parcelas deve ser informada.");
             Assegure.NaoNulo(enderecoCep, "O CEP do endereço deve ser informado.");
+            Assegure.NaoNulo(enderecoLogradouro, "O logradouro do endereço deve ser informado.");
             Assegure.NaoNulo(enderecoBairro, "O bairro do endereço deve ser informado.");
             Assegure.NaoNulo(enderecoUF, "A UF do endereço deve ser informada.");
             Assegure.NaoNulo(enderecoTipo, "O tipo do endereço deve ser informado.");
@@ -119,6 +125,7 @@ namespace Tecnica.Domain.Entities
             QuantidadeParcelas = quantidadeParcelas;
             Observacao = observacao;
             EnderecoCep = enderecoCep;
+            EnderecoLogradouro = enderecoLogradouro;
             EnderecoCodigoIbge = enderecoCodigoIbge;
             EnderecoBairro = enderecoBairro;
             EnderecoUF = enderecoUF;
@@ -132,7 +139,7 @@ namespace Tecnica.Domain.Entities
         // Construtor vazio para o Entity Framework
         public Venda()
         {
-
+            Status = nameof(DomainEnums.VendaStatus.CAD);
         }
 
         #region Métodos de Negócio
@@ -197,6 +204,11 @@ namespace Tecnica.Domain.Entities
         internal void Entregue()
         {
             Status = nameof(DomainEnums.VendaStatus.ENTR);
+        }
+
+        internal void AdicionarParcela(Parcela parcelaRemanejada)
+        {
+            Parcelas.Add(parcelaRemanejada);
         }
 
         #endregion

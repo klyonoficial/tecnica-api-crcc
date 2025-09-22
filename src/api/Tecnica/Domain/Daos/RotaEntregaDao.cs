@@ -24,12 +24,12 @@ namespace Tecnica.Domain.Daos
                 .FirstOrDefaultAsync(r => r.Id == id);
         }
 
-        public async Task<RotaEntrega?> ObterPorDataAsync(DateTime data)
+        public async Task<List<RotaEntrega>> ObterPorDataAsync(DateTime data)
         {
             return await _context.Set<RotaEntrega>()
                 .Include(r => r.Entregas)
-                .ThenInclude(e => e.Venda)
-                .FirstOrDefaultAsync(r => r.Data.Date == data.Date);
+                .Where(r => r.Data.Date == data.Date)
+                .ToListAsync();
         }
 
         public async Task<List<RotaEntregaResultDto>> ListarComFiltrosAsync(long? clienteId, DateTime? dataEntrega, int pageNumber = 1, int pageSize = 10)
@@ -89,6 +89,17 @@ namespace Tecnica.Domain.Daos
         public void RemoverAsync(RotaEntrega rotaEntrega)
         {
             _context.Set<RotaEntrega>().Remove(rotaEntrega);
+        }
+
+        internal async Task<List<Venda>> ListarEntregasEmAberto(DateTime data)
+        {
+            return await _context.Set<Venda>()
+                .Where(r => r.DataEntrega == data.Date
+                    && (r.Status == nameof(DomainEnums.VendaStatus.APROV)
+                    || r.Status == nameof(DomainEnums.VendaStatus.EXP))
+                    && !_context.Set<Entrega>().Any(e => e.RotaEntrega.Data.Date == data.Date
+                    && e.VendaId == r.Id))
+                .ToListAsync();
         }
     }
 }

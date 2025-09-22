@@ -42,7 +42,7 @@ namespace Tecnica.Domain.Entities
 
         public enum RotaCobrancaStatus
         {
-            CAD,
+            PEND,
             APROV,
 
             REPR,

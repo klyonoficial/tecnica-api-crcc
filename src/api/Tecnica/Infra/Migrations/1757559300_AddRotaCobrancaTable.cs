@@ -12,8 +12,8 @@ namespace Tecnica.Infra.Migrations
                 .WithColumn("data").AsDateTime().NotNullable()
                 .WithColumn("cobrador_id").AsInt64().NotNullable()
                 .WithColumn("aprovador_id").AsInt64().Nullable()
-                .WithColumn("total_receber").AsCustom("decimal(18,2)").NotNullable()
-                .WithColumn("total_recebido").AsCustom("decimal(18,2)").Nullable();
+                .WithColumn("observacao").AsCustom("varchar(800)").Nullable()
+                .WithColumn("status").AsCustom("varchar(10)").NotNullable();
 
             Create.ForeignKey("fk_rota_cobranca_cobrador")
                 .FromTable("rota_cobranca").ForeignColumn("cobrador_id")

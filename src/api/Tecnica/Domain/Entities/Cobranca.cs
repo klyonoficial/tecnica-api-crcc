@@ -17,11 +17,10 @@ namespace Tecnica.Domain.Entities
         [Column("parcela_id")]
         public long ParcelaId { get; set; }
 
-        public Cobranca(long rotaCobrancaId, long parcelaId)
+        public Cobranca(long parcelaId)
         {
-            Assegure.Que(rotaCobrancaId > 0, "A rota de cobrança deve ser informada.");
             Assegure.Que(parcelaId > 0, "A parcela deve ser informada.");
-            RotaCobrancaId = rotaCobrancaId;
+            ParcelaId = parcelaId;
         }
 
         // Construtor vazio para o Entity Framework

@@ -24,5 +24,6 @@ namespace Tecnica.Domain.Dtos
         public string? EnderecoTipo { get; set; }
         public List<ItemDto> Produtos { get; set; } = new();
         public List<ParcelaDto> Parcelas { get; set; } = new();
+        public string? EnderecoLogradouro { get; set; }
     }
 }

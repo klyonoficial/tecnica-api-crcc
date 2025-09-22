@@ -77,8 +77,7 @@ namespace Tecnica.Api.Controllers
             // Criar as parcelas da venda
             var parcelas = vendaDto.Parcelas.Select(p => new Parcela(
                 p.DataVencimento,
-                p.Valor,
-                p.Status
+                p.Valor
             )).ToList();
 
             // Criar a venda
@@ -92,6 +91,7 @@ namespace Tecnica.Api.Controllers
                 vendaDto.QuantidadeParcelas,
                 vendaDto.Observacao,
                 vendaDto.EnderecoCep,
+                vendaDto.EnderecoLogradouro,
                 vendaDto.EnderecoCodigoIbge,
                 vendaDto.EnderecoBairro,
                 vendaDto.EnderecoUF,

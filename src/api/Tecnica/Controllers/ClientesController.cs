@@ -90,8 +90,8 @@ namespace Tecnica.Controllers
             if (dto.Enderecos != null && dto.Enderecos.Any())
             {
                 enderecos = dto.Enderecos.Select(e => new Endereco(
-                    dto.Id,
                     e.Cep,
+                    e.Logradouro,
                     e.CodigoIbge,
                     e.Bairro,
                     e.UF,
