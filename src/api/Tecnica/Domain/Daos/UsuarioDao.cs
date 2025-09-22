@@ -16,9 +16,18 @@ namespace Tecnica.Domain.Daos
             _context = context;
         }
 
-        public async Task<Usuario> ObterPorIdAsync(long id)
+        public async Task<Usuario?> ObterPorIdAsync(long id)
         {
             return await _context.Set<Usuario>().FindAsync(id);
+        }
+
+        public async Task<Usuario?> AutenticarAsync(string login, string senha)
+        {
+            string senhaCriptografada = Tecnica.Infra.Util.CriptografarSenha(senha);
+            
+            return await _context.Set<Usuario>()
+                .Where(u => u.Email == login && u.Senha == senhaCriptografada && u.Ativo)
+                .FirstOrDefaultAsync();
         }
 
         public async Task<List<Usuario>> ListarTodosAsync()
@@ -31,7 +40,7 @@ namespace Tecnica.Domain.Daos
             await _context.Set<Usuario>().AddAsync(usuario);
         }
 
-        public async Task RemoverAsync(Usuario usuario)
+        public void RemoverAsync(Usuario usuario)
         {
             _context.Set<Usuario>().Remove(usuario);
         }

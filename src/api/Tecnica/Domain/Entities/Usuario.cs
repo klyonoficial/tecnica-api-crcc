@@ -26,37 +26,46 @@ namespace Tecnica.Domain.Entities
         [Column("ativo")]
         public bool Ativo { get; private set; }
 
-        [Column("perfil")]
-        public string Perfil { get; private set; }
+        [Column("deve_alterar_senha")]
+        public bool DeveAlterarSenha { get; private set; }
 
         // Construtor requerido pelo Entity Framework
         private Usuario() { }
 
-        public Usuario(string nome, string email, string senha, string perfil)
+        public Usuario(string nome, string email, string senha, bool deveAlterarSenha)
         {
             Assegure.NaoNulo(nome, "O nome deve ser informado.");
             Assegure.NaoNulo(email, "O e-mail deve ser informado.");
             Assegure.NaoNulo(senha, "A senha deve ser informada.");
-            Assegure.NaoNulo(perfil, "O perfil deve ser informado.");
+            Assegure.NaoNulo(deveAlterarSenha, "A informação sobre a necessidade de alteração de senha deve ser fornecida.");
 
             Nome = nome;
             Email = email;
-            Senha = senha;
+            Senha = Util.CriptografarSenha(senha);
             Ativo = true;
-            Perfil = perfil;
+            DeveAlterarSenha = deveAlterarSenha;
         }
 
-        public void Atualizar(string nome, string email, bool ativo, string perfil)
+        public void Atualizar(string nome, string email, bool ativo, bool deveAlterarSenha)
         {
             Assegure.NaoNulo(nome, "O nome deve ser informado.");
             Assegure.NaoNulo(email, "O e-mail deve ser informado.");
-            Assegure.NaoNulo(perfil, "O perfil deve ser informado.");
+            Assegure.NaoNulo(deveAlterarSenha, "A informação sobre a necessidade de alteração de senha deve ser fornecida.");
 
             Nome = nome;
             Email = email;
             Ativo = ativo;
-            Perfil = perfil;
+            DeveAlterarSenha = deveAlterarSenha;
         }
+
+        public void AlterarSenha(string novaSenha)
+        {
+            Assegure.NaoNulo(novaSenha, "A nova senha deve ser informada.");
+            
+            Senha = Tecnica.Infra.Util.CriptografarSenha(novaSenha);
+            DeveAlterarSenha = false;
+        }
+        
         public void Desativar() => Ativo = false;
     }
 }

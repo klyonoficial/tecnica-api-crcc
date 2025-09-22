@@ -13,7 +13,7 @@ namespace Tecnica.Infra.Migrations
                 .WithColumn("email").AsCustom("varchar(200)").NotNullable()
                 .WithColumn("senha").AsCustom("varchar(200)").NotNullable()
                 .WithColumn("ativo").AsBoolean().NotNullable().WithDefaultValue(true)
-                .WithColumn("perfil").AsCustom("varchar(5)").Nullable();
+                .WithColumn("deve_alterar_senha").AsBoolean().NotNullable().WithDefaultValue(true);
         }
 
         public override void Down()

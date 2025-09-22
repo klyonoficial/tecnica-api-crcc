@@ -1,5 +1,6 @@
 ﻿using System.Globalization;
 using System.Reflection;
+using System.Text;
 
 namespace Tecnica.Infra
 {
@@ -73,25 +74,75 @@ namespace Tecnica.Infra
             return field.GetValue(obj);
         }
 
+        public static string GerarSenhaAleatoria()
+        {
+            const string caracteres = "abcdefghijklmnopqrstuvwxyz0123456789";
+            var random = new Random();
+            var senha = new char[5];
+            for (int i = 0; i < senha.Length; i++)
+            {
+                senha[i] = caracteres[random.Next(caracteres.Length)];
+            }
+            return CriptografarSenha(new string(senha));
+        }
+
+        public static string CriptografarSenha(string senhaPlana)
+        {
+            if (string.IsNullOrEmpty(senhaPlana))
+                return string.Empty;
+
+            // Valor fixo de salt para consistência nas comparações
+            // Em um sistema real, este salt deveria ser armazenado no banco de dados
+            byte[] salt = new byte[] { 
+                0x43, 0x87, 0x23, 0x72, 
+                0x45, 0x56, 0x68, 0x14, 
+                0x62, 0x84, 0x27, 0x32, 
+                0x78, 0x58, 0x36, 0x19 
+            };
+            
+            // Usa PBKDF2 para hash da senha - é projetado especificamente para senhas
+            // e é mais resistente a ataques de força bruta
+            const int iteracoes = 10000;  // Número de iterações - aumenta a segurança
+            const int tamanhoChave = 32;  // Tamanho do hash resultante em bytes
+            
+            using (var pbkdf2 = new System.Security.Cryptography.Rfc2898DeriveBytes(
+                senhaPlana,
+                salt,
+                iteracoes,
+                System.Security.Cryptography.HashAlgorithmName.SHA256))
+            {
+                byte[] hash = pbkdf2.GetBytes(tamanhoChave);
+                
+                // Converte os bytes do hash para string hexadecimal
+                StringBuilder builder = new StringBuilder();
+                for (int i = 0; i < hash.Length; i++)
+                {
+                    builder.Append(hash[i].ToString("x2"));
+                }
+                
+                return builder.ToString();
+            }
+        }
+
     }
 
     public class DomainMessage
     {
-        public string Key { get; set; }
+        public string Key { get; set; } = string.Empty;
 
         public int Code { get; set; }
 
-        public string UserMessage { get; set; }
+        public string UserMessage { get; set; } = string.Empty;
 
-        public string ProgrammerMessage { get; set; }
+        public string ProgrammerMessage { get; set; } = string.Empty;
 
         public DomainMessage() { }
 
-        public DomainMessage(int code, string programmerMessage, string userMessage = null)
+        public DomainMessage(int code, string programmerMessage, string? userMessage = null)
         {
             Code = code;
             ProgrammerMessage = programmerMessage;
-            UserMessage = userMessage;
+            UserMessage = userMessage ?? string.Empty;
         }
 
 
