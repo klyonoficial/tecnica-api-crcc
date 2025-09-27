@@ -23,14 +23,21 @@ namespace Tecnica.Domain.Entities
 
         private Produto() { }
 
-        public Produto(string nome, Fornecedor fornecedor)
+        public Produto(string nome, long fornecedorId)
         {
             Assegure.NaoNulo(nome, "O nome deve ser informado.");
-            Assegure.NaoNulo(fornecedor, "O fornecedor deve ser informado.");
+            Assegure.Que(fornecedorId > 0, "O fornecedor deve ser informado.");
 
             Nome = nome;
-            Fornecedor = fornecedor;
-            FornecedorId = fornecedor.Id;
+            FornecedorId = fornecedorId;
+        }
+        public void Atualizar(string nome, long fornecedorId)
+        {
+            Assegure.NaoNulo(nome, "O nome deve ser informado.");
+            Assegure.Que(fornecedorId > 0, "O fornecedor deve ser informado.");
+
+            Nome = nome;
+            FornecedorId = fornecedorId;
         }
     }
 }
