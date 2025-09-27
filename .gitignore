@@ -56,3 +56,14 @@ CodeCoverage/
 *.VisualState.xml
 TestResult.xml
 nunit-*.xml
+/.vs/CRCC/v17/.wsuo
+/.vs/CRCC/v17/DocumentLayout.json
+/src/api/.vs/tecnica/CopilotIndices/17.14.1231.31060/CodeChunks.db
+/src/api/.vs/tecnica/CopilotIndices/17.14.1231.31060/CodeChunks.db-shm
+/src/api/.vs/tecnica/CopilotIndices/17.14.1231.31060/CodeChunks.db-wal
+/src/api/.vs/tecnica/CopilotIndices/17.14.1231.31060/SemanticSymbols.db
+/src/api/.vs/tecnica/CopilotIndices/17.14.1231.31060/SemanticSymbols.db-shm
+/src/api/.vs/tecnica/CopilotIndices/17.14.1231.31060/SemanticSymbols.db-wal
+/src/api/.vs/tecnica/FileContentIndex/c85aa372-24e6-4a07-9061-3aace98c5a00.vsidx
+/src/api/Tecnica/Tecnica.csproj.user
+/.gitignore
