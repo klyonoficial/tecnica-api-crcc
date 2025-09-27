@@ -18,7 +18,6 @@ namespace Tecnica.Controllers
             _context = context;
         }
 
-        //Teste
         [HttpPost("autenticar")]
         public async Task<IActionResult> Autenticar([FromBody] AutenticacaoDto autenticacaoDto)
         {
