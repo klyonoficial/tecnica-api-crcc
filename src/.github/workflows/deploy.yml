@@ -3,7 +3,7 @@ name: Deploy Heroku Apps
 on:
   push:
     branches:
-      - main
+      - feature/heroku
     paths:
       - 'src/api/**'
       - 'src/client/**'
