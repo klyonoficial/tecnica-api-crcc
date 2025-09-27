@@ -10,7 +10,7 @@ namespace Tecnica.Domain.Daos
             services.AddScoped<UsuarioDao>();
             services.AddScoped<ClienteDao>();
             services.AddScoped<FormaPagamentoDao>();
-            services.AddScoped<FornecedorDao>();
+            services.AddScoped<FabricanteDao>();
             services.AddScoped<ObservacaoDao>();
             services.AddScoped<ProdutoDao>();
             services.AddScoped<RotaCobrancaDao>();

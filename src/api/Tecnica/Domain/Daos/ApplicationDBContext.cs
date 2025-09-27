@@ -22,7 +22,7 @@ namespace Tecnica.Domain.Daos
     public DbSet<Cliente> Clientes { get; set; }
     public DbSet<Endereco> Enderecos { get; set; }
     public DbSet<FormaPagamento> FormasPagamento { get; set; }
-    public DbSet<Fornecedor> Fornecedores { get; set; }
+    public DbSet<Fabricante> Fornecedores { get; set; }
     public DbSet<Observacao> Observacoes { get; set; }
     public DbSet<Produto> Produtos { get; set; }
     public DbSet<RotaCobranca> RotasCobranca { get; set; }

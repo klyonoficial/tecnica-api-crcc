@@ -4,8 +4,8 @@ using Tecnica.Infra;
 
 namespace Tecnica.Domain.Entities
 {
-    [Table("fornecedor")]
-    public class Fornecedor
+    [Table("fabricante")]
+    public class Fabricante
     {
         [Key]
         public long Id { get; private set; }
@@ -13,12 +13,12 @@ namespace Tecnica.Domain.Entities
         [Column("nome")]
         public string Nome { get; private set; }
 
-        [InverseProperty("Fornecedor")]
+        [InverseProperty("Fabricante")]
         public virtual ICollection<Produto> Produtos { get; set; }
 
-        private Fornecedor() { }
+        private Fabricante() { }
 
-        public Fornecedor(string nome)
+        public Fabricante(string nome)
         {
             Assegure.NaoNulo(nome, "O nome deve ser informado.");
             Nome = nome;
