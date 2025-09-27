@@ -1,0 +1,48 @@
+version: "3.9"
+
+services:
+  api:
+    build:
+      context: ./src/api
+      dockerfile: Dockerfile
+    container_name: tecnica-api
+    ports:
+      - "5000:5000"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - DOTNET_USE_POLLING_FILE_WATCHER=1
+      - DOTNET_RUNNING_IN_CONTAINER=true
+      - DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
+      - PORT=5000
+      - ConnectionStrings__DefaultConnection=Server=db;Database=minhaapi;User=root;Password=root;
+    volumes:
+      - ./src/api:/src
+    depends_on:
+      - db
+
+  client:
+    build:
+      context: ./src/client
+      dockerfile: Dockerfile
+    container_name: tecnica-client
+    ports:
+      - "8080:80"
+    depends_on:
+      - api
+
+  db:
+    image: mariadb:10.5.29
+    container_name: tecnica-db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: minhaapi
+      MYSQL_USER: appuser
+      MYSQL_PASSWORD: appuserpwd
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+
+volumes:
+  db_data:

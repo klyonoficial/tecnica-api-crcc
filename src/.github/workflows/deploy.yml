@@ -1,0 +1,56 @@
+name: Deploy Heroku Apps
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'src/api/**'
+      - 'src/client/**'
+
+jobs:
+  deploy-api:
+    runs-on: ubuntu-latest
+    if: contains(join(github.event.head_commit.modified, ','), 'src/api/')
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Login to Heroku Container Registry
+        run: |
+          echo ${{ secrets.HEROKU_API_KEY }} | docker login --username=${{ secrets.HEROKU_EMAIL }} --password-stdin registry.heroku.com
+
+      - name: Build Docker image for API
+        run: |
+          docker build -t registry.heroku.com/${{ secrets.HEROKU_APP_API }}/web ./src/api
+
+      - name: Push Docker image to Heroku
+        run: |
+          docker push registry.heroku.com/${{ secrets.HEROKU_APP_API }}/web
+
+      - name: Release on Heroku
+        run: |
+          heroku container:release web --app ${{ secrets.HEROKU_APP_API }}
+
+  deploy-client:
+    runs-on: ubuntu-latest
+    if: contains(join(github.event.head_commit.modified, ','), 'src/client/')
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Login to Heroku Container Registry
+        run: |
+          echo ${{ secrets.HEROKU_API_KEY }} | docker login --username=${{ secrets.HEROKU_EMAIL }} --password-stdin registry.heroku.com
+
+      - name: Build Docker image for Client
+        run: |
+          docker build -t registry.heroku.com/${{ secrets.HEROKU_APP_CLIENT }}/web ./src/client
+
+      - name: Push Docker image to Heroku
+        run: |
+          docker push registry.heroku.com/${{ secrets.HEROKU_APP_CLIENT }}/web
+
+      - name: Release on Heroku
+        run: |
+          heroku container:release web --app ${{ secrets.HEROKU_APP_CLIENT }}
