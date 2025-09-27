@@ -11,10 +11,10 @@ namespace Tecnica.Controllers
     [Route("api/[controller]")]
     public class FornecedorController : ControllerBase
     {
-        private readonly FornecedorDao _fornecedorDao;
+        private readonly FabricanteDao _fornecedorDao;
         private readonly ApplicationDbContext _context;
 
-        public FornecedorController(FornecedorDao fornecedorDao, ApplicationDbContext context)
+        public FornecedorController(FabricanteDao fornecedorDao, ApplicationDbContext context)
         {
             _fornecedorDao = fornecedorDao;
             _context = context;

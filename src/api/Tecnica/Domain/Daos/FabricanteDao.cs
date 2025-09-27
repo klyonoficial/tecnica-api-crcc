@@ -6,11 +6,11 @@ using Tecnica.Domain.Entities;
 
 namespace Tecnica.Domain.Daos
 {
-    public class FornecedorDao
+    public class FabricanteDao
     {
         private readonly ApplicationDbContext _context;
 
-        public FornecedorDao(ApplicationDbContext context)
+        public FabricanteDao(ApplicationDbContext context)
         {
             _context = context;
         }
