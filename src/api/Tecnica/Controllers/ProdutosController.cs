@@ -49,13 +49,13 @@ namespace Tecnica.Controllers
             {
                 Id = Produto.Id,
                 Nome = Produto.Nome,
-                FornecedorId = Produto.Fornecedor.Id
+                FabricanteId = Produto.FabricanteId
             };
         }
 
         private Produto ToEntity(ProdutoDto ProdutoDto)
         {
-            return new Produto(ProdutoDto.Nome, ProdutoDto.FornecedorId);
+            return new Produto(ProdutoDto.Nome, ProdutoDto.FabricanteId);
         }
 
         [HttpPut()]
@@ -65,7 +65,7 @@ namespace Tecnica.Controllers
             if (Produto == null)
                 return NotFound();
 
-            Produto.Atualizar(ProdutoDto.Nome, ProdutoDto.FornecedorId);
+            Produto.Atualizar(ProdutoDto.Nome, ProdutoDto.FabricanteId);
 
             await _context.SaveChangesAsync();
 
