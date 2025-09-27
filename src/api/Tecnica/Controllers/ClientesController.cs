@@ -161,7 +161,7 @@ namespace Tecnica.Controllers
         public async Task<IActionResult> ResumoCompras(long id)
         {
             // Minimal implementation: aggregate vendas if table exists
-            var vendas = await _context.Set<Venda>().Where(v => v.ClienteId == id).ToListAsync();
+            var vendas = await _context.Set<Venda>().Where(v => v.PessoaId == id).ToListAsync();
             var total = vendas.Sum(v => v.ValorTotal);
             var count = vendas.Count;
             var last = vendas.OrderByDescending(v => v.DataCadastro).FirstOrDefault()?.DataCadastro;
@@ -194,19 +194,19 @@ namespace Tecnica.Controllers
                 DataAprovou = c.DataAprovou,
                 DataCadastro = c.DataCadastro,
                 DadosSerasa = c.DadosSerasa,
-                Enderecos = c.Enderecos?.Select(e => ToDto(e)).ToList() ?? new List<EnderecoDto>(),
-                Arquivos = c.Arquivos?.Select(a => ToDto(a)).ToList() ?? new List<ArquivoDto>()
+                Enderecos = c.Enderecos?.Select(e => ToDto(e)).Where(e => e != null).Cast<EnderecoDto>().ToList() ?? new List<EnderecoDto>(),
+                Arquivos = c.Arquivos?.Select(a => ToDto(a)).Where(a => a != null).Cast<ArquivoDto>().ToList() ?? new List<ArquivoDto>()
             };
         }
 
-        public EnderecoDto ToDto(Endereco endereco)
+        private EnderecoDto? ToDto(Endereco endereco)
         {
             if (endereco == null) return null;
 
             return new EnderecoDto
             {
                 Id = endereco.Id,
-                ClienteId = endereco.ClienteId,
+                ClienteId = endereco.PessoaId,
                 Cep = endereco.Cep,
                 CodigoIbge = endereco.CodigoIbge,
                 Bairro = endereco.Bairro,
@@ -217,7 +217,7 @@ namespace Tecnica.Controllers
             };
         }
 
-        public ArquivoDto ToDto(Arquivo arquivo)
+        private ArquivoDto? ToDto(Arquivo arquivo)
         {
             if (arquivo == null) return null;
 

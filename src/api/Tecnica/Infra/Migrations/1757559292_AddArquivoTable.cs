@@ -9,13 +9,13 @@ namespace Tecnica.Infra.Migrations
         {
             Create.Table("arquivo")
                 .WithColumn("id").AsInt64().PrimaryKey().Identity()
-                .WithColumn("cliente_id").AsInt64().NotNullable()
+                .WithColumn("pessoa_id").AsInt64().NotNullable()
                 .WithColumn("tipo").AsCustom("varchar(50)").NotNullable()
                 .WithColumn("nome").AsCustom("varchar(200)").NotNullable();
 
-            Create.ForeignKey("fk_arquivo_cliente")
-                .FromTable("arquivo").ForeignColumn("cliente_id")
-                .ToTable("cliente").PrimaryColumn("id");
+            Create.ForeignKey("fk_arquivo_pessoa")
+                .FromTable("arquivo").ForeignColumn("pessoa_id")
+                .ToTable("pessoa").PrimaryColumn("id");
         }
 
         public override void Down()

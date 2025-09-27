@@ -11,7 +11,7 @@ namespace Tecnica.Infra.Migrations
                 .WithColumn("id").AsInt64().PrimaryKey().Identity()
                 .WithColumn("data_cadastro").AsDateTime().NotNullable()
                 .WithColumn("status").AsCustom("varchar(10)").NotNullable()
-                .WithColumn("cliente_id").AsInt64().NotNullable()
+                .WithColumn("pessoa_id").AsInt64().NotNullable()
                 .WithColumn("vendedor_id").AsInt64().NotNullable()
                 .WithColumn("data_entrega").AsDateTime().Nullable()
                 .WithColumn("valor_total").AsCustom("decimal(18,2)").NotNullable()
@@ -28,9 +28,9 @@ namespace Tecnica.Infra.Migrations
                 .WithColumn("endereco_complemento").AsCustom("varchar(200)").Nullable()
                 .WithColumn("endereco_tipo").AsCustom("varchar(5)").Nullable();
 
-            Create.ForeignKey("fk_venda_cliente")
-                .FromTable("venda").ForeignColumn("cliente_id")
-                .ToTable("cliente").PrimaryColumn("id");
+            Create.ForeignKey("fk_venda_pessoa")
+                .FromTable("venda").ForeignColumn("pessoa_id")
+                .ToTable("pessoa").PrimaryColumn("id");
 
             Create.ForeignKey("fk_venda_vendedor")
                 .FromTable("venda").ForeignColumn("vendedor_id")

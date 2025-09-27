@@ -1,0 +1,159 @@
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
+using System.Text.RegularExpressions;
+
+namespace Tecnica.Infra.Auth
+{
+    public class AuthService
+    {
+        IHttpContextAccessor httpContextAccessor;
+
+        UsuarioDAO usuarioDAO;
+
+        IConfiguration configuration;
+
+        public AuthService(IHttpContextAccessor httpContextAccessor, UsuarioDAO usuarioDAO,
+            IConfiguration configuration)
+        {
+            this.httpContextAccessor = httpContextAccessor;
+            this.usuarioDAO = usuarioDAO;
+            this.configuration = configuration;
+        }
+
+        public async Task<ICurrentUser> CreateCurrentUser()
+        {
+            var idUsuario = Convert.ToInt32(httpContextAccessor.HttpContext.User.FindFirst(TokenIdUsuario).Value);
+            var login = httpContextAccessor.HttpContext.User.FindFirst(TokenLogin).Value;
+
+            return await usuarioDAO.GetUsuarioApp(idUsuario, login);
+        }
+
+
+        public async Task<AutenticarResultDTO> AutenticarAdmin(AutenticarRequest request)
+        {
+            string senhaCriptografada = PasswordHandler.Encrypt(request.Senha).Hash;
+
+            var usuario = await usuarioDAO.TryAutenticarUsuarioAdmin(request.Login, senhaCriptografada, siteAtual.Host);
+            Assegure.NaoNulo(usuario, "Acesso inválido");
+
+            var revenda = await revendaDAO.GetById(usuario.IdRevenda);
+            Assegure.Que(usuario.IdCliente == revenda.IdClientePrincipal, "Acesso inválido 2");
+
+            var usuarioApp = await usuarioDAO.GetUsuarioApp(usuario.IdUsuario, usuario.Login);
+
+            var token = GerarToken(new JwtDataDTO
+            {
+                IdUsuario = usuario.IdUsuario,
+                Login = usuario.Login,
+                NomeCliente = usuario.RazaoSocial,
+                DeveAlterarSenha = usuario.DeveAlterarSenha,
+                TipoContrato = "ADMIN",
+                EhUsuarioDeDistribuidor = usuarioApp.EhUsuarioDeDistribuidor
+             
+            });
+
+            var result = new AutenticarResultDTO
+            {
+                Token = token
+            };
+
+            return result;
+        }
+
+        public async Task<AutenticarResultDTO> AutenticarCliente(AutenticarRequest request)
+        {
+            string senhaCriptografada = PasswordHandler.Encrypt(request.Senha).Hash;
+
+            var usuario = await usuarioDAO.TryAutenticarUsuarioWeb(request.Login, senhaCriptografada, siteAtual.Host);
+            Assegure.NaoNulo(usuario, "Acesso inválido");
+
+
+            var token = GerarToken(new JwtDataDTO
+            {
+                IdUsuario = usuario.IdUsuario,
+                Login = usuario.Login,
+                NomeCliente = usuario.RazaoSocial,
+                DeveAlterarSenha = usuario.DeveAlterarSenha,
+                TipoContrato = usuario.TipoContrato
+            });
+
+            var result = new AutenticarResultDTO
+            {
+                Token = token
+            };
+
+            return result;
+        }
+
+        private string GerarToken(JwtDataDTO data)
+        {
+            var keyToken = configuration[Constants.JwtSecurekeyToken];
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.ASCII.GetBytes(keyToken);
+
+            var claims = new List<Claim>
+            {
+                new Claim(TokenIdUsuario, data.IdUsuario.ToString()),
+                new Claim(TokenNome, data.NomeCliente),
+                new Claim(TokenLogin, data.Login),
+                new Claim(TokenDeveAlterarSenha, data.DeveAlterarSenha.ToString()),
+                new Claim(TokenTipoContrato, data.TipoContrato),
+                new Claim(TokenEhUsuarioDeDistribuidor, data.EhUsuarioDeDistribuidor.ToString())
+            };
+
+            var expirationInMinutes = 8 * 60;
+
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(claims),
+                Expires = DateTime.Now.AddMinutes(expirationInMinutes),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+            };
+
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            return tokenHandler.WriteToken(token);
+
+        }
+
+        public static string TokenIdUsuario = "idUsuario";
+        public static string TokenNome = "nome";
+        public static string TokenLogin = "login";
+        public static string TokenDeveAlterarSenha = "deveAlterarSenha";
+        public static string TokenTipoContrato = "tipoContrato";
+        public static string TokenEhUsuarioDeDistribuidor = "ehUsuarioDeDistribuidor";
+        
+        public async Task ReiniciarSenha(long idRevenda, long idUsuario, ReiniciarSenhaDTO request)
+        {
+            Assegure.NaoNulo(request.SenhaAtual, "Senha atual não informada");
+            Assegure.NaoNulo(request.NovaSenha, "Nova senha não informada");
+            Assegure.NaoNulo(request.NovaSenhaConfirmacao, "Confirmação Nova senha não informada");
+
+            Assegure.Que(request.NovaSenha == request.NovaSenhaConfirmacao, "Nova senha e Confirmação não são iguais");
+
+            var usuario = await usuarioDAO.GetByIdForUpdate(idRevenda, idUsuario);
+            Assegure.NaoNulo(usuario, "Usuário não encontrado");
+
+            Assegure.Que(usuario.Senha == PasswordHandler.Encrypt(request.SenhaAtual).Hash, "Senha atual não confere");
+
+
+            var hasNumber = new Regex(@"[0-9]+");
+            var hasUpperChar = new Regex(@"[A-Z]+");
+            var hasMinimum8Chars = new Regex(@".{8,}");
+
+            var isValidated = hasNumber.IsMatch(request.NovaSenha) && hasMinimum8Chars.IsMatch(request.NovaSenha);
+            Assegure.Que(isValidated, "Nova senha deve ter 8 caracteres e pelo menos um número");
+
+
+            usuario.Senha = PasswordHandler.Encrypt(request.NovaSenha).Hash;
+            usuario.DeveAlterarSenha = false;
+
+            await usuarioDAO.Update(usuario);
+
+        }
+
+    }
+}

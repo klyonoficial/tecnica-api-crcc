@@ -9,7 +9,7 @@ namespace Tecnica.Infra.Migrations
         {
             Create.Table("endereco")
                 .WithColumn("id").AsInt64().PrimaryKey().Identity()
-                .WithColumn("cliente_id").AsInt64().NotNullable()
+                .WithColumn("pessoa_id").AsInt64().NotNullable()
                 .WithColumn("cep").AsCustom("varchar(10)").NotNullable()
                 .WithColumn("logradouro").AsCustom("varchar(300)").Nullable()
                 .WithColumn("codigo_ibge").AsCustom("varchar(20)").Nullable()
@@ -19,9 +19,9 @@ namespace Tecnica.Infra.Migrations
                 .WithColumn("complemento").AsCustom("varchar(200)").Nullable()
                 .WithColumn("tipo").AsCustom("varchar(5)").Nullable();
 
-            Create.ForeignKey("fk_endereco_cliente")
-                .FromTable("endereco").ForeignColumn("cliente_id")
-                .ToTable("cliente").PrimaryColumn("id");
+            Create.ForeignKey("fk_endereco_pessoa")
+                .FromTable("endereco").ForeignColumn("pessoa_id")
+                .ToTable("pessoa").PrimaryColumn("id");
         }
 
         public override void Down()

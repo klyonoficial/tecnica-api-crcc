@@ -1,0 +1,58 @@
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using Tecnica.Core.Infra;
+
+namespace Tecnica.Infra.Auth
+{
+    public static class AuthExtension
+    {
+        public static void AddJwtBearerAuthorization(IServiceCollection services, ConfigurationManager configuration)
+        {
+            var hashKey = configuration[Constants.JwtSecurekeyToken];
+            var bytes = Encoding.ASCII.GetBytes(hashKey);
+
+            services.AddAuthentication(x =>
+            {
+                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+
+            })
+            .AddJwtBearer(x =>
+            {
+                x.RequireHttpsMetadata = true;
+                x.SaveToken = true;
+                x.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(bytes),
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+                    ValidateLifetime = true,
+                    ClockSkew = TimeSpan.FromSeconds(30) //
+                };
+                x.Events = new JwtBearerEvents()
+                {
+                    OnChallenge = OnChallengeService.Execute
+                };
+
+            });
+
+        }
+
+        public static void AddFilters(MvcOptions config)
+        {
+            config.Filters.Add(new CustomAuthenticationAttribute());
+        }
+
+        public static void AddConfigure(IApplicationBuilder app)
+        {
+            app.UseAuthentication();
+            app.UseAuthorization();
+
+        }
+
+    }
+}

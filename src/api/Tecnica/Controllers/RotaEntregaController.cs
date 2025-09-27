@@ -195,7 +195,7 @@ namespace Tecnica.Api.Controllers
                     Id = entrega.Id,
                     VendaId = entrega.VendaId,
                     Status = entrega.Status,
-                    ClienteId = entrega.Venda.ClienteId,
+                    ClienteId = entrega.Venda.PessoaId,
                     ClienteNome = entrega.Venda.Cliente.RazaoSocial,
                     ValorTotal = entrega.Venda.ValorTotal,
                     EnderecoBairro = entrega.Venda.EnderecoBairro,
@@ -226,7 +226,7 @@ namespace Tecnica.Api.Controllers
                     Id = null, // ID fictício, pois não existe uma entrega real
                     VendaId = venda.Id,
                     Status = venda.Status,
-                    ClienteId = venda.ClienteId,
+                    ClienteId = venda.PessoaId,
                     ClienteNome = venda.Cliente.RazaoSocial,
                     ValorTotal = venda.ValorTotal,
                     EnderecoBairro = venda.EnderecoBairro,
@@ -261,7 +261,7 @@ namespace Tecnica.Api.Controllers
             {
                 VendaId = e.VendaId,
                 Status = e.Status,
-                Cliente = e.Venda?.ClienteId,
+                Cliente = e.Venda?.PessoaId,
                 Endereco = $"{e.Venda?.EnderecoBairro}, {e.Venda?.EnderecoNumero} - {e.Venda?.EnderecoUF}"
             }).ToList();
 

@@ -37,7 +37,7 @@ namespace Tecnica.Domain.Daos
                     Id = v.Id,
                     DataCadastro = v.DataCadastro,
                     Status = v.Status,
-                    ClienteId = v.ClienteId,
+                    ClienteId = v.PessoaId,
                     VendedorId = v.VendedorId,
                     DataEntrega = v.DataEntrega,
                     ValorTotal = v.ValorTotal,

@@ -11,8 +11,8 @@ namespace Tecnica.Domain.Entities
         [Column("id")]
         public long Id { get; set; }
 
-        [Column("cliente_id")]
-        public long ClienteId { get; set; }
+        [Column("pessoa_id")]
+        public long PessoaId { get; set; }
 
         [Column("cep")]
         public string Cep { get; set; }

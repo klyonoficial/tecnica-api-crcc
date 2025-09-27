@@ -64,7 +64,7 @@ namespace Tecnica.Domain.Daos
 
             if (clienteId.HasValue)
             {
-                query = query.Where(r => r.Cobrancas.Any(c => c.Parcela != null && c.Parcela.Venda != null && c.Parcela.Venda.ClienteId == clienteId.Value));
+                query = query.Where(r => r.Cobrancas.Any(c => c.Parcela != null && c.Parcela.Venda != null && c.Parcela.Venda.PessoaId == clienteId.Value));
             }
 
             // Aplicar paginação

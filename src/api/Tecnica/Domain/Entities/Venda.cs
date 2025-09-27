@@ -18,8 +18,8 @@ namespace Tecnica.Domain.Entities
         [Column("status")]
         public string Status { get; set; }
 
-        [Column("cliente_id")]
-        public long ClienteId { get; set; }
+        [Column("pessoa_id")]
+        public long PessoaId { get; set; }
 
         [Column("vendedor_id")]
         public long VendedorId { get; set; }
@@ -76,13 +76,13 @@ namespace Tecnica.Domain.Entities
         [InverseProperty("Venda")]
         public virtual ICollection<Parcela>? Parcelas { get; set; }
 
-        [ForeignKey("ClienteId")]
+        [ForeignKey("PessoaId")]
         [InverseProperty("Vendas")]
         public virtual Cliente? Cliente { get; set; }
 
         public Venda(
             DateTime dataCadastro,
-            long clienteId,
+            long pessoaId,
             long vendedorId,
             DateTime? dataEntrega,
             decimal? valorEntrada,
@@ -101,8 +101,9 @@ namespace Tecnica.Domain.Entities
             ICollection<Parcela>? parcelas)
         {
             Assegure.NaoNulo(dataCadastro, "A data de cadastro deve ser informada.");
-            Assegure.Que(clienteId > 0, "O cliente deve ser informado.");
+            Assegure.Que(pessoaId > 0, "O cliente deve ser informado.");
             Assegure.Que(vendedorId > 0, "O vendedor deve ser informado.");
+            Assegure.Que(pessoaId > 0, "O cliente deve ser informado.");
             Assegure.Que(diaAcerto > 0, "O dia de acerto deve ser informado.");
             Assegure.Que(quantidadeParcelas > 0, "A quantidade de parcelas deve ser informada.");
             Assegure.NaoNulo(enderecoCep, "O CEP do endereço deve ser informado.");
@@ -116,7 +117,7 @@ namespace Tecnica.Domain.Entities
 
             DataCadastro = dataCadastro;
             Status = nameof(DomainEnums.VendaStatus.CAD);
-            ClienteId = clienteId;
+            PessoaId = pessoaId;
             VendedorId = vendedorId;
             DataEntrega = dataEntrega;
             ValorTotal = items.Sum(vp => vp.Quantidade * vp.Preco);

@@ -1,0 +1,134 @@
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Controllers;
+using Microsoft.AspNetCore.Mvc.Filters;
+
+namespace Tecnica.Infra.Auth
+{
+    public class CustomAuthenticationAttribute : AuthorizeAttribute, IAsyncAuthorizationFilter
+    {
+        public async Task OnAuthorizationAsync(AuthorizationFilterContext context)
+        {
+            var anonymousAttribute = context.ActionDescriptor.EndpointMetadata.OfType<AllowAnonymousAttribute>();
+            if (anonymousAttribute.Any())
+            {
+                return;
+            }
+
+            var descriptor = (context.ActionDescriptor as ControllerActionDescriptor);
+            var customAttribute = descriptor.EndpointMetadata.OfType<CustomAuthorizationAttribute>().ToList();
+            if (customAttribute.Count() == 0)
+            {
+                context.Result = new JsonResult(new
+                {
+                    Messagem = "Este endpoint não possui o CustomAuthorizationAttribute"
+                })
+                { StatusCode = StatusCodes.Status500InternalServerError };
+
+                return;
+            }
+
+            if (!context.HttpContext.User.Identity.IsAuthenticated)
+            {
+                context.Result = new JsonResult(new
+                {
+                    Messagem = "Usuário não autenticado"
+                })
+                { StatusCode = StatusCodes.Status401Unauthorized };
+
+                return;
+            }
+
+
+            var authService = GetService<AuthService>(context);
+            var currentUser = await authService.CreateCurrentUser();
+
+
+            var usuarioDAO = GetService<UsuarioDAO>(context);
+
+
+            var auth = customAttribute[0];
+            if (auth.Perfil == TipoPerfilAuth.ADMIN)
+            {
+
+                if (auth.ModuleId == CustomAuthorizationAttribute.ALLOWEDMODULE)
+                {
+                    return;
+                }
+
+                if (!currentUser.EhUsuarioDeRevenda)
+                {
+                    context.Result = new JsonResult(new
+                    {
+                        Messagem = "O usuário não é ADMIN"
+                    })
+                    { StatusCode = StatusCodes.Status401Unauthorized };
+
+                    return;
+                }
+
+
+                var paginasPermitidas = await usuarioDAO.GetPaginasPermitidasParaMenu(currentUser.IdUsuario, currentUser.Grupos());
+
+
+                if (!paginasPermitidas.Any(x => x.Codigo == auth.ModuleId))
+                {
+                    context.Result = new JsonResult(new
+                    {
+                        Messagem = "Recurso não autorizado"
+                    })
+                    { StatusCode = StatusCodes.Status401Unauthorized };
+
+                    return;
+                }
+
+
+                var usuarioAtivo = await usuarioDAO.ValidateUserActiveAdmin(currentUser.IdUsuario);
+                if (!usuarioAtivo)
+                {
+                    context.Result = new JsonResult(new
+                    {
+                        Messagem = "Usuário ADMIN não ativo"
+                    })
+                    { StatusCode = StatusCodes.Status401Unauthorized };
+
+                    return;
+                }
+
+            }
+            else // CLIENTE
+            {
+                var usuarioAtivo = await usuarioDAO.ValidateUserActiveCliente(currentUser.IdUsuario);
+                if (!usuarioAtivo)
+                {
+                    context.Result = new JsonResult(new
+                    {
+                        Messagem = "Usuário cliente não ativo"
+                    })
+                    { StatusCode = StatusCodes.Status401Unauthorized };
+
+                    return;
+                }
+            }
+
+
+            if (currentUser.DeveAlterarSenha)
+            {
+                context.Result = new JsonResult(new
+                {
+                    Messagem = "O usuário deve alterar a senha"
+                })
+                { StatusCode = StatusCodes.Status401Unauthorized };
+
+                return;
+            }
+
+        }
+
+        private T GetService<T>(AuthorizationFilterContext context) where T : class
+        {
+            return context.HttpContext.RequestServices.GetService(typeof(T)) as T;
+        }
+
+    }
+}

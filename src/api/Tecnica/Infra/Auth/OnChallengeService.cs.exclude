@@ -1,0 +1,39 @@
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text.Json;
+
+namespace Tecnica.Infra.Auth
+{
+    public class OnChallengeService
+    {
+        public static Task Execute(JwtBearerChallengeContext context)
+        {
+            context.HandleResponse();
+
+            var authorization = context.HttpContext.Request.Headers["Authorization"];
+            if (string.IsNullOrWhiteSpace(authorization))
+            {
+                return CreateMessage(context, "The token was not informed");
+            }
+
+            if (context.AuthenticateFailure != null && context.AuthenticateFailure.GetType() == typeof(SecurityTokenExpiredException))
+            {
+                return CreateMessage(context, "The token has expired");
+            }
+
+            return CreateMessage(context, "Invalid authorization header. Pass the header:  Authorization: Beare TOKEN'");
+        }
+
+        private static Task CreateMessage(JwtBearerChallengeContext context, string message)
+        {
+            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+            context.Response.ContentType = "application/json";
+
+            return context.Response.WriteAsync(JsonSerializer.Serialize(
+            new
+            {
+                message = message
+            }));
+        }
+    }
+}

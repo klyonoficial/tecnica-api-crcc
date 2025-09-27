@@ -43,7 +43,7 @@ namespace Tecnica.Api.Controllers
                 Id = venda.Id,
                 DataCadastro = venda.DataCadastro,
                 Status = venda.Status,
-                ClienteId = venda.ClienteId,
+                ClienteId = venda.PessoaId,
                 VendedorId = venda.VendedorId,
                 DataEntrega = venda.DataEntrega,
                 ValorTotal = venda.ValorTotal,

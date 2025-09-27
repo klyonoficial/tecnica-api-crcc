@@ -46,7 +46,7 @@ namespace Tecnica.Domain.Daos
 
             if (clienteId.HasValue)
             {
-                query = query.Where(r => r.Entregas.Any(e => e.Venda != null && e.Venda.ClienteId == clienteId.Value));
+                query = query.Where(r => r.Entregas.Any(e => e.Venda != null && e.Venda.PessoaId == clienteId.Value));
             }
 
             return await query
