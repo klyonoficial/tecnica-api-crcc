@@ -14,23 +14,23 @@ namespace Tecnica.Domain.Entities
         [Required]
         public string Nome { get; private set; }
 
-        [Column("fornecedor_id")]
-        public long FornecedorId { get; private set; }
+        [Column("fabricante_id")]
+        public long FabricanteId { get; private set; }
 
-        [ForeignKey("FornecedorId")]
+        [ForeignKey("FabricanteId")]
         [InverseProperty("Produtos")]
-        public Fornecedor Fornecedor { get; private set; }
+        public Fabricante Fabricante { get; private set; }
 
         private Produto() { }
 
-        public Produto(string nome, Fornecedor fornecedor)
+        public Produto(string nome, Fabricante fabricante)
         {
             Assegure.NaoNulo(nome, "O nome deve ser informado.");
-            Assegure.NaoNulo(fornecedor, "O fornecedor deve ser informado.");
+            Assegure.NaoNulo(fabricante, "O fabricante deve ser informado.");
 
             Nome = nome;
-            Fornecedor = fornecedor;
-            FornecedorId = fornecedor.Id;
+            Fabricante = fabricante;
+            FabricanteId = fabricante.Id;
         }
     }
 }

@@ -64,7 +64,7 @@ namespace Tecnica.Controllers
             return Ok();
         }
 
-        private FornecedorDto ToDto(Fornecedor f)
+        private FornecedorDto ToDto(Fabricante f)
         {
             return new FornecedorDto
             {
@@ -73,9 +73,9 @@ namespace Tecnica.Controllers
             };
         }
 
-        private Fornecedor ToEntity(FornecedorDto dto)
+        private Fabricante ToEntity(FornecedorDto dto)
         {
-            return new Fornecedor(dto.Nome);
+            return new Fabricante(dto.Nome);
         }
     }
 }
