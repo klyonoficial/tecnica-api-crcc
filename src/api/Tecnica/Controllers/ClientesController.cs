@@ -1,7 +1,4 @@
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Tecnica.Domain.Daos;
 using Tecnica.Domain.Dtos;

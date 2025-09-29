@@ -1,9 +1,7 @@
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Tecnica.Domain.Daos;
 using Tecnica.Domain.Dtos;
 using Tecnica.Domain.Entities;
-using Tecnica.Dtos;
 using Tecnica.Infra;
 
 namespace Tecnica.Controllers

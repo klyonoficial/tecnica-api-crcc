@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Tecnica.Domain.Daos;
 using Tecnica.Dtos;
@@ -10,12 +9,10 @@ namespace Tecnica.Controllers
     public class AutenticacaoController : ControllerBase
     {
         private readonly UsuarioDao _usuarioDao;
-        private readonly ApplicationDbContext _context;
 
-        public AutenticacaoController(UsuarioDao usuarioDao, ApplicationDbContext context)
+        public AutenticacaoController(UsuarioDao usuarioDao)
         {
             _usuarioDao = usuarioDao;
-            _context = context;
         }
 
         [HttpPost("autenticar")]
