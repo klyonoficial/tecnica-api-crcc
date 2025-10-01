@@ -119,6 +119,16 @@ const router = createRouter({
                     name: 'cliente-editar',
                     component: () => import('@/views/pages/ClienteFormPage.vue'),
                     props: route => ({ id: parseInt(route.params.id) })
+                },
+                {
+                    path: '/usuarios',
+                    name: 'usuarios',
+                    component: () => import('@/views/pages/UsuarioListPage.vue')
+                },
+                {
+                    path: '/usuarios/novo',
+                    name: 'usuario-novo',
+                    component: () => import('@/views/pages/UsuarioFormPage.vue')
                 }
             ]
         },

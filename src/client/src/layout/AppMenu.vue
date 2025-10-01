@@ -20,6 +20,16 @@ const model = ref([
                 label: 'Novo Cliente', 
                 icon: 'pi pi-fw pi-user-plus', 
                 to: '/clientes/novo'
+            },
+            { 
+                label: 'Usuários', 
+                icon: 'pi pi-fw pi-users', 
+                to: '/usuarios'
+            },
+            {
+                label: 'Novo Usuário',
+                icon: 'pi pi-fw pi-user-plus',
+                to: '/usuarios/novo'
             }
         ]
     },
