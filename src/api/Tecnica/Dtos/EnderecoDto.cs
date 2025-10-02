@@ -14,7 +14,7 @@ namespace Tecnica.Domain.Dtos
         public string? Tipo { get; set; }
 
         // Converte o DTO para a entidade. ClienteId é passado explicitamente
-        public Tecnica.Domain.Entities.Endereco ToEntity(long clienteId)
+        public Tecnica.Domain.Entities.Endereco ToEntity()
         {
             var entidade = new Tecnica.Domain.Entities.Endereco(Cep, Logradouro, CodigoIbge, Bairro, UF, Numero, Complemento, Tipo);
             if (Id > 0) entidade.Id = Id;

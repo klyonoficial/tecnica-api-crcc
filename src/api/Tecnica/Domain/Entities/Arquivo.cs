@@ -20,12 +20,10 @@ namespace Tecnica.Domain.Entities
         [Column("nome")]
         public string Nome { get; set; }
 
-        public Arquivo(long clienteId, string tipo, string nome)
+        public Arquivo(string tipo, string nome)
         {
-            Assegure.Que(clienteId > 0, "O cliente deve ser informado.");
             Assegure.NaoNulo(tipo, "O tipo deve ser informado.");
             Assegure.NaoNulo(nome, "O nome deve ser informado.");
-            ClienteId = clienteId;
             Tipo = tipo;
             Nome = nome;
         }

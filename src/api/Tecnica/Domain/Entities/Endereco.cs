@@ -64,7 +64,7 @@ namespace Tecnica.Domain.Entities
             
         }
 
-        [ForeignKey("ClienteId")]
+        [ForeignKey("PessoaId")]
         [InverseProperty("Enderecos")]
         public virtual Cliente? Cliente { get; set; }
     }

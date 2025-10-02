@@ -5,5 +5,6 @@ namespace Tecnica.Domain.Dtos
         public long Id { get; set; }
         public string Nome { get; set; }
         public long FabricanteId { get; set; }
+        public string FabricanteNome { get; set; }
     }
 }

@@ -1,3 +1,5 @@
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Tecnica.Domain.Daos;
 using Tecnica.Domain.Dtos;
@@ -49,7 +51,8 @@ namespace Tecnica.Controllers
             {
                 Id = Produto.Id,
                 Nome = Produto.Nome,
-                FabricanteId = Produto.FabricanteId
+                FabricanteId = Produto.FabricanteId,
+                FabricanteNome = Produto.Fabricante?.Nome ?? string.Empty
             };
         }
 

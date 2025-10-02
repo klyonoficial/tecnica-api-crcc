@@ -7,9 +7,9 @@ namespace Tecnica.Domain.Dtos
         public string Tipo { get; set; }
         public string Nome { get; set; }
 
-        public Tecnica.Domain.Entities.Arquivo ToEntity(long clienteId)
+        public Tecnica.Domain.Entities.Arquivo ToEntity()
         {
-            var entidade = new Tecnica.Domain.Entities.Arquivo(clienteId, Tipo, Nome);
+            var entidade = new Tecnica.Domain.Entities.Arquivo(Tipo, Nome);
             if (Id > 0) entidade.Id = Id;
             return entidade;
         }

@@ -3,6 +3,7 @@ using Serilog;
 using Tecnica.Core.Infra;
 using Tecnica.Core.Infra.Data;
 using Tecnica.Domain.Daos;
+using Tecnica.Infra;
 
 var builder = WebApplication.CreateBuilder(args);
 ConfigurationManager configuration = builder.Configuration;
@@ -66,8 +67,10 @@ app.UseSwaggerUI(c =>
     c.RoutePrefix = "swagger";
 });
 
-app.UseHttpsRedirection();
+app.UseMiddleware<GlobalExceptionMiddleware>();
 
+app.UseHttpsRedirection();
+app.UseCors("AllowAll");
 
 Log.Information("Aplicação iniciada...");
 app.Run();

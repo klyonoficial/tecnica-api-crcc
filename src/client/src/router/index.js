@@ -107,7 +107,7 @@ const router = createRouter({
                 {
                     path: '/clientes',
                     name: 'clientes',
-                    component: () => import('@/views/pages/Crud.vue')
+                    component: () => import('@/views/pages/ClientesListPage.vue')
                 },
                 {
                     path: '/clientes/novo',
@@ -117,7 +117,22 @@ const router = createRouter({
                 {
                     path: '/clientes/:id/editar',
                     name: 'cliente-editar',
-                    component: () => import('@/views/pages/ClienteFormPage.vue'),
+                    component: () => import('@/views/pages/ClienteFormPage.vue')
+                },
+                {
+                    path: '/produtos',
+                    name: 'produtos',
+                    component: () => import('@/components/produto/ProdutoList.vue')
+                },
+                {
+                    path: '/produtos/novo',
+                    name: 'produto-novo',
+                    component: () => import('@/views/pages/ProdutoFormPage.vue')
+                },
+                {
+                    path: '/produtos/:id/editar',
+                    name: 'produto-editar',
+                    component: () => import('@/views/pages/ProdutoFormPage.vue'),
                     props: route => ({ id: parseInt(route.params.id) })
                 },
                 {

@@ -15,7 +15,17 @@
                 <AccordionTab v-for="(endereco, index) in enderecos" :key="index" 
                     :header="getEnderecoHeader(endereco, index)">
                     <div class="endereco-form">
-                        <!-- Primeira linha: CEP -->
+                        <!-- Primeira linha: Tipo -->
+                        <div class="field">
+                            <label :for="'tipo-' + index" class="font-bold">Tipo*</label>
+                            <Dropdown :id="'tipo-' + index" v-model="endereco.tipo" :options="tiposEndereco" 
+                                optionLabel="label" optionValue="value" placeholder="Selecione o tipo" class="w-full" />
+                            <small v-if="validations[index] && validations[index].tipo && validations[index].tipo.$invalid && validations[index].tipo.$dirty" class="p-error">
+                                Tipo é obrigatório
+                            </small>
+                        </div>
+
+                        <!-- Segunda linha: CEP -->
                         <div class="field">
                             <label :for="'cep-' + index" class="font-bold">CEP*</label>
                             <div class="p-inputgroup">
@@ -27,7 +37,7 @@
                             </small>
                         </div>
 
-                        <!-- Segunda linha: Logradouro e Número -->
+                        <!-- Terceira linha: Logradouro e Número -->
                         <div class="field grid">
                             <div class="col-12 md:col-8">
                                 <label :for="'logradouro-' + index" class="font-bold">Logradouro*</label>
@@ -45,13 +55,13 @@
                             </div>
                         </div>
 
-                        <!-- Terceira linha: Complemento -->
+                        <!-- Quarta linha: Complemento -->
                         <div class="field">
                             <label :for="'complemento-' + index" class="font-bold">Complemento</label>
                             <InputText :id="'complemento-' + index" v-model="endereco.complemento" placeholder="Complemento" class="w-full" />
                         </div>
 
-                        <!-- Quarta linha: Bairro, Cidade e UF -->
+                        <!-- Quinta linha: Bairro, Cidade e UF -->
                         <div class="field grid">
                             <div class="col-12 md:col-5">
                                 <label :for="'bairro-' + index" class="font-bold">Bairro*</label>
@@ -76,7 +86,7 @@
                             </div>
                         </div>
 
-                        <!-- Quinta linha: Opções -->
+                        <!-- Sexta linha: Opções -->
                         <div class="field grid align-items-end">
                             <div class="col-12 md:col-6">
                                 <div class="field-checkbox">
@@ -134,6 +144,12 @@ export default {
             'RJ', 'RN', 'RO', 'RR', 'RS', 'SC', 'SE', 'SP', 'TO'
         ];
 
+        const tiposEndereco = [
+            { label: 'Cobrança', value: 'COBR' },
+            { label: 'Entrega', value: 'ENT' },
+            { label: 'Outros', value: 'OUT' }
+        ];
+
         // Cria validações para cada endereço
         const createValidation = (endereco) => {
             return useVuelidate({
@@ -142,7 +158,8 @@ export default {
                 numero: { required },
                 bairro: { required },
                 cidade: { required },
-                uf: { required }
+                uf: { required },
+                tipo: { required }
             }, endereco);
         };
 
@@ -215,13 +232,15 @@ export default {
 
         // Formata o cabeçalho do accordion
         const getEnderecoHeader = (endereco, index) => {
+            const tipoLabel = tiposEndereco.find(t => t.value === endereco.tipo)?.label || 'Outros';
             const enderecoInfo = endereco.logradouro ? 
                 `${endereco.logradouro}, ${endereco.numero}${endereco.complemento ? ', ' + endereco.complemento : ''} - ${endereco.cidade}/${endereco.uf}` : 
                 `Endereço ${index + 1}`;
                 
+            const headerInfo = `[${tipoLabel}] ${enderecoInfo}`;
             return endereco.principal ? 
-                `${enderecoInfo} (Principal)` : 
-                enderecoInfo;
+                `${headerInfo} (Principal)` : 
+                headerInfo;
         };
 
         // Verifica a validade de todos os endereços
@@ -263,6 +282,7 @@ export default {
             openIndex,
             validations,
             estados,
+            tiposEndereco,
             addEndereco,
             removerEndereco,
             setPrincipal,

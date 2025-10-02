@@ -58,17 +58,17 @@ namespace Tecnica.Controllers
             List<Endereco>? enderecos = null;
             if (dto.Enderecos != null && dto.Enderecos.Any())
             {
-                enderecos = dto.Enderecos.Select(e => e.ToEntity(dto.Id)).ToList();
+                enderecos = dto.Enderecos.Select(e => e.ToEntity()).ToList();
             }
 
             // Map Arquivos DTOs (if ArquivoDto exists with needed props)
             List<Arquivo>? arquivos = null;
             if (dto.Arquivos != null && dto.Arquivos.Any())
             {
-                arquivos = dto.Arquivos.Select(a => a.ToEntity(dto.Id)).ToList();
+                arquivos = dto.Arquivos.Select(a => a.ToEntity()).ToList();
             }
 
-            var cliente = new Cliente(dto.VendedorId, dto.CpfCnpj, dto.RazaoSocial, dto.NomeFantasia, dto.Contato, dto.TelefoneDdd, dto.TelefoneNumero, dto.DiaCobranca, dto.DadosSerasa, enderecos, arquivos);
+            var cliente = new Cliente(dto.VendedorId!.Value, dto.CpfCnpj, dto.RazaoSocial, dto.NomeFantasia, dto.Contato, dto.TelefoneDdd, dto.TelefoneNumero, dto.DiaCobranca!.Value, dto.DadosSerasa, enderecos, arquivos);
             await _clienteDao.AdicionarAsync(cliente);
             await _context.SaveChangesAsync();
             return CreatedAtAction(nameof(GetCliente), new { id = cliente.Id }, ToDto(cliente));
@@ -77,7 +77,7 @@ namespace Tecnica.Controllers
         [HttpPut]
         public async Task<IActionResult> UpdateCliente([FromBody] ClienteDto dto)
         {
-            var cliente = await _clienteDao.ObterPorIdAsync(dto.Id);
+            var cliente = await _clienteDao.ObterPorIdAsync(dto.Id!.Value);
             if (cliente == null)
                 return NotFound();
 
@@ -99,14 +99,14 @@ namespace Tecnica.Controllers
             }
 
             cliente.Atualizar(
-                dto.VendedorId,
+                dto.VendedorId!.Value,
                 dto.CpfCnpj,
                 dto.RazaoSocial,
                 dto.NomeFantasia,
                 dto.Contato,
                 dto.TelefoneDdd,
                 dto.TelefoneNumero,
-                dto.DiaCobranca,
+                dto.DiaCobranca!.Value,
                 enderecos,
                 dto.DadosSerasa);
 
@@ -205,6 +205,7 @@ namespace Tecnica.Controllers
                 Id = endereco.Id,
                 ClienteId = endereco.PessoaId,
                 Cep = endereco.Cep,
+                Logradouro = endereco.Logradouro ?? string.Empty,
                 CodigoIbge = endereco.CodigoIbge,
                 Bairro = endereco.Bairro,
                 UF = endereco.UF,

@@ -28,6 +28,7 @@ export class Endereco {
         this.bairro = '';
         this.cidade = '';
         this.uf = '';
+        this.tipo = 'OUT'; // Valor padrão: Outros
         this.principal = false;
     }
 }
