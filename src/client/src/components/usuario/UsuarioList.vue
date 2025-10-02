@@ -1,8 +1,8 @@
 <template>
   <div class="card">
     <DataTable
-      :value="usuarios"
-      :paginator="true"
+      :value="usuarios || []"
+      :paginator="usuarios && usuarios.length > 0"
       :rows="10"
       dataKey="id"
       :rowHover="true"
@@ -48,8 +48,8 @@
       </Column>
       <Column header="Ações" style="min-width: 8rem" bodyClass="text-center">
         <template #body="{ data }">
-          <Button icon="pi pi-pencil" class="p-button-rounded p-button-info p-button-sm mr-2" @click="$emit('editar', data)" />
-          <Button icon="pi pi-trash" class="p-button-rounded p-button-danger p-button-sm" @click="$emit('remover', data)" />
+          <Button icon="pi pi-pencil" class="p-button-rounded p-button-info p-button-sm mr-2" @click="editarUsuario(data)" />
+          <Button icon="pi pi-trash" class="p-button-rounded p-button-danger p-button-sm" @click="removerUsuario(data)" />
         </template>
       </Column>
     </DataTable>
@@ -63,27 +63,46 @@ import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
 import IconField from 'primevue/iconfield';
 import InputIcon from 'primevue/inputicon';
+import UsuarioService from '@/service/UsuarioService';
 
 export default {
   components: { DataTable, Column, Button, InputText, IconField, InputIcon },
-  props: {
-    usuarios: {
-      type: Array,
-      default: () => []
-    }
-  },
   data() {
     return {
+      usuarios: null,
       filters: {
         global: { value: null, matchMode: 'contains' }
-      }
+      },
+      usuarioService: new UsuarioService()
     }
   },
+  mounted() {
+    this.carregarUsuarios();
+  },
   methods: {
+    carregarUsuarios() {
+      this.usuarioService.getUsuarios()
+        .then(data => {
+          this.usuarios = Array.isArray(data) ? data : [];
+        })
+        .catch(() => {
+          this.usuarios = [];
+        });
+    },
     clearFilter() {
       this.filters = {
         global: { value: null, matchMode: 'contains' }
       };
+    },
+    editarUsuario(usuario) {
+      this.$router.push({ name: 'usuario-editar', params: { id: usuario.id } });
+    },
+    removerUsuario(usuario) {
+      if (confirm('Deseja remover este usuário?')) {
+        this.usuarioService.deleteUsuario(usuario.id).then(() => {
+          this.carregarUsuarios();
+        });
+      }
     }
   }
 }

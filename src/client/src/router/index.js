@@ -129,6 +129,12 @@ const router = createRouter({
                     path: '/usuarios/novo',
                     name: 'usuario-novo',
                     component: () => import('@/views/pages/UsuarioFormPage.vue')
+                },
+                {
+                    path: '/usuarios/:id/editar',
+                    name: 'usuario-editar',
+                    component: () => import('@/views/pages/UsuarioFormPage.vue'),
+                    props: route => ({ usuarioId: parseInt(route.params.id) })
                 }
             ]
         },

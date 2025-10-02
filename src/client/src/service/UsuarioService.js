@@ -10,11 +10,23 @@ export default class UsuarioService {
     }
 
     saveUsuario(usuario) {
+        // Monta o DTO conforme esperado pelo backend
+        const dto = {
+            id: usuario.id ?? 0, // Garante que id nunca será nulo
+            nome: usuario.nome,
+            email: usuario.email,
+            ativo: usuario.ativo,
+            deveAlterarSenha: usuario.deveAlterarSenha
+        };
         if (usuario.id) {
-            return axios.put(`/api/usuarios/${usuario.id}`, usuario).then(res => res.data);
+            return axios.put('/api/usuarios', dto).then(res => res.data);
         } else {
-            return axios.post('/api/usuarios', usuario).then(res => res.data);
+            return axios.post('/api/usuarios', dto).then(res => res.data);
         }
+    }
+
+    deleteUsuario(id) {
+        return axios.delete(`/api/usuarios/${id}`);
     }
 
     resetSenha(id) {

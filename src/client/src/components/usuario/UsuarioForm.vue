@@ -51,20 +51,27 @@ import Button from 'primevue/button';
 export default {
   components: { Dropdown, Button },
   props: {
-    usuarioProp: {
-      type: Object,
-      default: () => new Usuario()
+    usuarioId: {
+      type: Number,
+      default: null
     }
   },
   data() {
     return {
-      usuario: { ...this.usuarioProp },
+      usuario: new Usuario(),
       perfis: [
         { label: 'Administrador', value: 'Administrador' },
         { label: 'Usuário', value: 'Usuário' },
         { label: 'Gerente', value: 'Gerente' }
       ],
       service: new UsuarioService()
+    }
+  },
+  mounted() {
+    if (this.usuarioId) {
+      this.service.getUsuario(this.usuarioId).then(data => {
+        this.usuario = data;
+      });
     }
   },
   methods: {

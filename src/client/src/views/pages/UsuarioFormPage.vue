@@ -3,7 +3,7 @@
         <div class="flex align-items-center justify-content-between mb-3">
             <h2 class="m-0">Cadastro de Usuário</h2>
         </div>
-        <UsuarioForm />
+        <UsuarioForm :usuarioId="usuarioId" />
     </div>
 </template>
 
@@ -13,6 +13,12 @@
 export default {
     components: {
         UsuarioForm
+    },
+    props: {
+        usuarioId: {
+            type: Number,
+            default: null
+        }
     }
 }
 </script>
