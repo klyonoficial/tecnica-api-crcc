@@ -1,6 +1,5 @@
 <template>
     <div class="p-fluid">
-        <h4>Dados Pessoais</h4>
 
         <div class="field grid">
             <div class="col-12 md:col-4">

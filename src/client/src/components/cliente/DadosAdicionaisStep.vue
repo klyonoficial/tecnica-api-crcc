@@ -1,6 +1,5 @@
 <template>
     <div class="p-fluid">
-        <h4>Dados Adicionais</h4>
         <p class="text-color-secondary mb-4">
             Estas informações são preenchidas automaticamente pelo sistema.
         </p>

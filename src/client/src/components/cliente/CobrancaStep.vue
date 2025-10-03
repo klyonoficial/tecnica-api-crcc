@@ -1,6 +1,5 @@
 <template>
     <div class="p-fluid">
-        <h4>Dados de Cobrança</h4>
         
         <div class="field">
             <label for="diaCobranca" class="font-bold">Dia de Cobrança*</label>

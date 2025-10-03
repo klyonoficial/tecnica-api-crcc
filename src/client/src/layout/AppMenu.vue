@@ -42,7 +42,8 @@ const model = ref([
                 to: '/usuarios/novo'
             }
         ]
-    },
+   },
+   /*  
     {
         label: 'UI Components',
         items: [
@@ -170,7 +171,7 @@ const model = ref([
                 target: '_blank'
             }
         ]
-    }
+    } */
 ]);
 </script>
 

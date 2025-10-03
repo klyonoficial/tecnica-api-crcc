@@ -1,6 +1,6 @@
 <template>
     <div class="p-fluid">
-        <h4>Dados Serasa</h4>
+
         <p class="text-color-secondary mb-4">
             Informações relacionadas ao Serasa do cliente.
         </p>

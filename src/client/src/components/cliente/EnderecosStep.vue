@@ -1,7 +1,7 @@
 <template>
     <div class="p-fluid">
         <div class="mb-3">
-            <h4>Endereços</h4>
+
             <a href="#" @click.prevent="addEndereco" class="p-link">
                 <i class="pi pi-plus mr-1"></i>Novo Endereço
             </a>

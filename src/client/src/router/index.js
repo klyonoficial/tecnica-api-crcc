@@ -8,11 +8,11 @@ const router = createRouter({
             path: '/',
             component: AppLayout,
             children: [
-                {
-                    path: '/',
-                    name: 'dashboard',
-                    component: () => import('@/views/Dashboard.vue')
-                },
+                // {
+                //     path: '/',
+                //     name: 'dashboard',
+                //     component: () => import('@/views/Dashboard.vue')
+                // },
                 {
                     path: '/uikit/formlayout',
                     name: 'formlayout',
@@ -107,6 +107,11 @@ const router = createRouter({
                 {
                     path: '/clientes',
                     name: 'clientes',
+                    component: () => import('@/views/pages/ClientesListPage.vue')
+                },
+                {
+                    path: '/',
+                    name: 'clientesHome',
                     component: () => import('@/views/pages/ClientesListPage.vue')
                 },
                 {
