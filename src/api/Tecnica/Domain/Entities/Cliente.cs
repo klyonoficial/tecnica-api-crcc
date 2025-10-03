@@ -7,12 +7,9 @@ using Tecnica.Infra;
 
 namespace Tecnica.Domain.Entities
 {
-    [Table("pessoa")]
     public class Cliente : Pessoa
     {
-        [Key]
-        [Column("id")]
-        public long Id { get; set; }
+      
 
         [Column("vendedor_id")]
         public long VendedorId { get; set; }
@@ -76,9 +73,10 @@ namespace Tecnica.Domain.Entities
             Assegure.NaoNulo(cpfCnpj, "O CPF/CNPJ deve ser informado.");
             Assegure.NaoNulo(razaoSocial, "A razão social deve ser informada.");
             Assegure.Que(diaCobranca > 0, "O dia de cobrança deve ser informado.");
+            Assegure.Que(Validation.IsValidCpfCnpj(cpfCnpj), "Um CPF/CNPJ válido deve ser informado.");
 
             VendedorId = vendedorId;
-            CpfCnpj = cpfCnpj;
+            CpfCnpj = cpfCnpj.RemoverCaracteresEspeciais();
             RazaoSocial = razaoSocial;
             NomeFantasia = nomeFantasia;
             Contato = contato;

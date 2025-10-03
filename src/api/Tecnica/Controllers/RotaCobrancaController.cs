@@ -1,12 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Tecnica.Domain.Daos;
 using Tecnica.Domain.Dtos;
 using Tecnica.Domain.Entities;
-using Microsoft.EntityFrameworkCore;
 using Tecnica.Dtos;
 
 namespace Tecnica.Controllers
@@ -17,7 +12,6 @@ namespace Tecnica.Controllers
     {
         private readonly RotaCobrancaDao _rotaCobrancaDao;
         private readonly ApplicationDbContext _context;
-
         private readonly VendaDao _vendas;
 
         public RotaCobrancaController(RotaCobrancaDao rotaCobrancaDao, ApplicationDbContext context, VendaDao vendas)

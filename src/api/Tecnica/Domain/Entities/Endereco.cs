@@ -48,7 +48,7 @@ namespace Tecnica.Domain.Entities
             Assegure.NaoNulo(uf, "A UF deve ser informada.");
             Assegure.NaoNulo(tipo, "O tipo deve ser informado.");
 
-            Cep = cep;
+            Cep = cep.RemoverCaracteresEspeciais();
             Logradouro = logradouro;
             CodigoIbge = codigoIbge;
             Bairro = bairro;
@@ -64,7 +64,7 @@ namespace Tecnica.Domain.Entities
             
         }
 
-        [ForeignKey("ClienteId")]
+        [ForeignKey("PessoaId")]
         [InverseProperty("Enderecos")]
         public virtual Cliente? Cliente { get; set; }
     }

@@ -17,7 +17,10 @@ namespace Tecnica.Domain.Daos
 
         public async Task<Cliente?> ObterPorIdAsync(long id)
         {
-            return await _context.Set<Cliente>().FindAsync(id);
+            return await _context.Set<Cliente>()
+                .Include(c => c.Enderecos)
+                .Include(c => c.Arquivos)
+                .FirstOrDefaultAsync(c => c.Id == id);
         }
 
         public async Task<List<Cliente>> ListarTodosAsync()

@@ -11,18 +11,39 @@ namespace Tecnica.Domain.Daos
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
-{
-    modelBuilder.Entity<Pessoa>()
-        .HasDiscriminator<string>("tipo")
-        .HasValue<Cliente>("cliente");
-}
+        {
+            modelBuilder.Entity<Pessoa>()
+                .HasDiscriminator<string>("tipo")
+                .HasValue<Cliente>("cliente");
+
+            // Configurar relacionamento Cliente -> Enderecos
+            modelBuilder.Entity<Cliente>()
+                .HasMany(c => c.Enderecos)
+                .WithOne(e => e.Cliente)
+                .HasForeignKey(e => e.PessoaId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Configurar relacionamento Cliente -> Arquivos
+            modelBuilder.Entity<Cliente>()
+                .HasMany(c => c.Arquivos)
+                .WithOne(a => a.Cliente)
+                .HasForeignKey(a => a.PessoaId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Configurar relacionamento Cliente -> Vendas
+            modelBuilder.Entity<Cliente>()
+                .HasMany(c => c.Vendas)
+                .WithOne(v => v.Cliente)
+                .HasForeignKey(v => v.PessoaId)
+                .OnDelete(DeleteBehavior.Cascade);
+        }
 
     public DbSet<Usuario> Usuarios { get; set; }
     public DbSet<Arquivo> Arquivos { get; set; }
     public DbSet<Cliente> Clientes { get; set; }
     public DbSet<Endereco> Enderecos { get; set; }
     public DbSet<FormaPagamento> FormasPagamento { get; set; }
-    public DbSet<Fornecedor> Fornecedores { get; set; }
+    public DbSet<Fabricante> Fornecedores { get; set; }
     public DbSet<Observacao> Observacoes { get; set; }
     public DbSet<Produto> Produtos { get; set; }
     public DbSet<RotaCobranca> RotasCobranca { get; set; }
@@ -34,5 +55,6 @@ namespace Tecnica.Domain.Daos
     public DbSet<Item> VendasProduto { get; set; }
     public DbSet<Componente> Componentes { get; set; }
     public DbSet<Permissao> Permissoes { get; set; }
+    public DbSet<Cidade> Cidades { get; set; }
     }
 }

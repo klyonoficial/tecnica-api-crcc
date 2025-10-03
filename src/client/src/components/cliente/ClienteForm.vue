@@ -2,38 +2,43 @@
     <div class="grid">
         <div class="col-12">
             <div class="card">
-                <h5>Cadastro de Cliente</h5>
                 <TabView v-model:activeIndex="currentStep">
-                    <TabPanel header="Dados Pessoais" :disabled="!canAccessStep(0)">
+                    <TabPanel header="Dados Pessoais">
                         <DadosPessoaisStep 
                             :cliente="cliente" 
                             @update:valid="updateStepValidity(0, $event)" />
                     </TabPanel>
 
-                    <TabPanel header="Endereços" :disabled="!canAccessStep(1)">
+                    <TabPanel header="Endereços">
                         <EnderecosStep 
                             :enderecos="cliente.enderecos" 
                             @update:enderecos="cliente.enderecos = $event" 
                             @update:valid="updateStepValidity(1, $event)" />
                     </TabPanel>
 
-                    <TabPanel header="Dados de Cobrança" :disabled="!canAccessStep(2)">
+                    <TabPanel header="Dados de Cobrança">
                         <CobrancaStep 
                             :cliente="cliente" 
                             @update:valid="updateStepValidity(2, $event)" />
                     </TabPanel>
 
-                    <TabPanel header="Arquivos" :disabled="!canAccessStep(3)">
-                        <ArquivosStep 
-                            :arquivos="cliente.arquivos" 
-                            @update:arquivos="cliente.arquivos = $event" 
+                    <TabPanel header="Dados Serasa">
+                        <DadosSerasaStep 
+                            :cliente="cliente" 
                             @update:valid="updateStepValidity(3, $event)" />
                     </TabPanel>
 
-                    <TabPanel header="Confirmação" :disabled="!canAccessStep(4)">
-                        <ConfirmacaoStep 
+                    <TabPanel header="Dados Adicionais">
+                        <DadosAdicionaisStep 
                             :cliente="cliente" 
                             @update:valid="updateStepValidity(4, $event)" />
+                    </TabPanel>
+
+                    <TabPanel header="Arquivos">
+                        <ArquivosStep 
+                            :arquivos="cliente.arquivos" 
+                            @update:arquivos="cliente.arquivos = $event" 
+                            @update:valid="updateStepValidity(5, $event)" />
                     </TabPanel>
                 </TabView>
 
@@ -41,26 +46,14 @@
                     <Button 
                         type="button" 
                         label="Voltar" 
-                        icon="pi pi-chevron-left"
-                        class="p-button-secondary" 
-                        :disabled="currentStep === 0"
-                        @click="prevStep" />
-
+                        icon="pi pi-arrow-left"
+                        class="p-button-secondary"
+                        @click="voltar" />
                     <Button 
-                        v-if="currentStep < 4" 
-                        type="button" 
-                        label="Próximo" 
-                        icon="pi pi-chevron-right"
-                        iconPos="right"
-                        :disabled="!stepsValid[currentStep]"
-                        @click="nextStep" />
-                        
-                    <Button 
-                        v-else 
                         type="submit" 
-                        label="Finalizar" 
+                        label="Salvar Cliente" 
                         icon="pi pi-check"
-                        :disabled="!formValid || submitting"
+                        :disabled="submitting"
                         :loading="submitting"
                         @click="onSubmit" />
                 </div>
@@ -70,17 +63,20 @@
 </template>
 
 <script>
-import { ref, computed, reactive, watch } from 'vue';
+import { ref, computed, reactive, watch, toRaw } from 'vue';
 import { useToast } from 'primevue/usetoast';
+import { useRoute } from 'vue-router';
 import TabView from 'primevue/tabview';
 import TabPanel from 'primevue/tabpanel';
 import DadosPessoaisStep from './DadosPessoaisStep.vue';
 import EnderecosStep from './EnderecosStep.vue';
 import CobrancaStep from './CobrancaStep.vue';
+import DadosSerasaStep from './DadosSerasaStep.vue';
+import DadosAdicionaisStep from './DadosAdicionaisStep.vue';
 import ArquivosStep from './ArquivosStep.vue';
-import ConfirmacaoStep from './ConfirmacaoStep.vue';
 import ClienteService from '@/service/ClienteService';
 import { Cliente } from '@/models/cliente.model';
+import { useErrorHandler } from '@/utils/errorHandler';
 
 export default {
     components: {
@@ -89,45 +85,33 @@ export default {
         DadosPessoaisStep,
         EnderecosStep,
         CobrancaStep,
-        ArquivosStep,
-        ConfirmacaoStep
+        DadosSerasaStep,
+        DadosAdicionaisStep,
+        ArquivosStep
     },
-    props: {
-        id: {
-            type: Number,
-            default: null
-        }
-    },
-    setup(props) {
+    setup() {
         const toast = useToast();
+        const route = useRoute();
+        const { handleError } = useErrorHandler();
         const clienteService = new ClienteService();
         const cliente = reactive(new Cliente());
         const currentStep = ref(0);
         const submitting = ref(false);
-        const stepsValid = reactive([false, false, false, false, true]); // O último passo (confirmação) é sempre válido
+        const stepsValid = reactive([false, false, false, true, true, false]); // Dados Serasa e Dados Adicionais são sempre válidos
         
+        // Recupera o ID da URL
+        const clienteId = route.params.id ? parseInt(route.params.id) : null;
+    
         const formValid = computed(() => {
-            return stepsValid.every((step, index) => {
-                // Só verificamos a validade dos passos até o atual
-                return index > currentStep.value || step === true;
-            });
+            // Para finalizar, apenas os campos obrigatórios precisam estar válidos
+            // Dados Pessoais (0), Endereços (1) e Dados de Cobrança (2) são obrigatórios
+            return stepsValid[0] && stepsValid[1] && stepsValid[2];
         });
 
-        // Controla quais abas podem ser acessadas
-        const canAccessStep = (stepIndex) => {
-            if (stepIndex === 0) return true; // Primeira aba sempre acessível
-            
-            // Para acessar uma aba, todas as anteriores devem ser válidas
-            for (let i = 0; i < stepIndex; i++) {
-                if (!stepsValid[i]) return false;
-            }
-            return true;
-        };
-
         const loadCliente = async () => {
-            if (props.id) {
+            if (clienteId) {
                 try {
-                    const data = await clienteService.getCliente(props.id);
+                    const data = await clienteService.getCliente(clienteId);
                     Object.assign(cliente, data);
                     
                     // Garante que enderecos e arquivos sejam arrays
@@ -138,7 +122,7 @@ export default {
                         cliente.arquivos = [];
                     }
                 } catch (error) {
-                    toast.add({ severity: 'error', summary: 'Erro', detail: 'Erro ao carregar dados do cliente', life: 3000 });
+                    handleError(error);
                 }
             } else {
                 // Para novo cliente, garante que os arrays estejam inicializados
@@ -151,55 +135,31 @@ export default {
             }
         };
 
-        const nextStep = () => {
-            if (currentStep.value < 4 && stepsValid[currentStep.value]) {
-                currentStep.value++;
-            }
-        };
-
-        const prevStep = () => {
-            if (currentStep.value > 0) {
-                currentStep.value--;
-            }
-        };
 
         const updateStepValidity = (step, valid) => {
             stepsValid[step] = valid;
         };
 
         const onSubmit = async () => {
-            if (!formValid.value) return;
-            
             submitting.value = true;
             try {
                 await clienteService.saveCliente(cliente);
                 toast.add({ severity: 'success', summary: 'Sucesso', detail: 'Cliente salvo com sucesso!', life: 3000 });
                 // Redirecionar ou redefinir o formulário conforme necessário
             } catch (error) {
-                toast.add({ severity: 'error', summary: 'Erro', detail: 'Erro ao salvar cliente', life: 3000 });
+                handleError(error);
             } finally {
                 submitting.value = false;
             }
         };
 
-        // Observa mudanças na aba ativa para sincronizar com currentStep
-        watch(currentStep, (newStep) => {
-            // Impede navegar para abas não liberadas
-            if (!canAccessStep(newStep)) {
-                // Volta para a última aba válida
-                let validStep = 0;
-                for (let i = 4; i >= 0; i--) {
-                    if (canAccessStep(i)) {
-                        validStep = i;
-                        break;
-                    }
-                }
-                currentStep.value = validStep;
-            }
-        });
+        const voltar = () => {
+            // Navegar de volta para a lista de clientes
+            window.history.back();
+        };
 
         // Carregar cliente se ID for fornecido
-        if (props.id) {
+        if (clienteId) {
             loadCliente();
         }
 
@@ -209,11 +169,9 @@ export default {
             stepsValid,
             formValid,
             submitting,
-            canAccessStep,
-            nextStep,
-            prevStep,
             updateStepValidity,
-            onSubmit
+            onSubmit,
+            voltar
         };
     }
 }
@@ -240,11 +198,6 @@ export default {
 
 :deep(.p-tabview-nav li:not(.p-highlight) .p-tabview-nav-link:hover) {
     background: var(--surface-hover);
-}
-
-:deep(.p-tabview-nav li.p-disabled .p-tabview-nav-link) {
-    opacity: 0.5;
-    cursor: not-allowed;
 }
 
 :deep(.p-tabview-panels) {

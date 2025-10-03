@@ -1,5 +1,3 @@
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Tecnica.Domain.Daos;
 using Tecnica.Domain.Dtos;
@@ -11,10 +9,10 @@ namespace Tecnica.Controllers
     [Route("api/[controller]")]
     public class FornecedorController : ControllerBase
     {
-        private readonly FornecedorDao _fornecedorDao;
+        private readonly FabricanteDao _fornecedorDao;
         private readonly ApplicationDbContext _context;
 
-        public FornecedorController(FornecedorDao fornecedorDao, ApplicationDbContext context)
+        public FornecedorController(FabricanteDao fornecedorDao, ApplicationDbContext context)
         {
             _fornecedorDao = fornecedorDao;
             _context = context;
@@ -64,7 +62,7 @@ namespace Tecnica.Controllers
             return Ok();
         }
 
-        private FornecedorDto ToDto(Fornecedor f)
+        private FornecedorDto ToDto(Fabricante f)
         {
             return new FornecedorDto
             {
@@ -73,9 +71,9 @@ namespace Tecnica.Controllers
             };
         }
 
-        private Fornecedor ToEntity(FornecedorDto dto)
+        private Fabricante ToEntity(FornecedorDto dto)
         {
-            return new Fornecedor(dto.Nome);
+            return new Fabricante(dto.Nome);
         }
     }
 }

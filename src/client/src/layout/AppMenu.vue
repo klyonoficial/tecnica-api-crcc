@@ -20,9 +20,30 @@ const model = ref([
                 label: 'Novo Cliente', 
                 icon: 'pi pi-fw pi-user-plus', 
                 to: '/clientes/novo'
+            },
+            { 
+                label: 'Produtos', 
+                icon: 'pi pi-fw pi-box', 
+                to: '/produtos'
+            },
+            { 
+                label: 'Novo Produto', 
+                icon: 'pi pi-fw pi-plus', 
+                to: '/produtos/novo'
+            },
+            { 
+                label: 'Usuários', 
+                icon: 'pi pi-fw pi-users', 
+                to: '/usuarios'
+            },
+            {
+                label: 'Novo Usuário',
+                icon: 'pi pi-fw pi-user-plus',
+                to: '/usuarios/novo'
             }
         ]
-    },
+   },
+   /*  
     {
         label: 'UI Components',
         items: [
@@ -150,7 +171,7 @@ const model = ref([
                 target: '_blank'
             }
         ]
-    }
+    } */
 ]);
 </script>
 

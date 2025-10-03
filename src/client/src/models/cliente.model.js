@@ -27,7 +27,9 @@ export class Endereco {
         this.complemento = '';
         this.bairro = '';
         this.cidade = '';
-        this.uf = '';
+        this.codigoIbge = null; // Código IBGE da cidade selecionada
+        this.uf = 'ES'; // Valor padrão: ES
+        this.tipo = 'OUT'; // Valor padrão: Outros
         this.principal = false;
     }
 }

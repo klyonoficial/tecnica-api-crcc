@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Tecnica.Domain.Entities;
+using Tecnica.Domain.Dtos;
 
 namespace Tecnica.Domain.Daos
 {
@@ -15,14 +16,16 @@ namespace Tecnica.Domain.Daos
             _context = context;
         }
 
-        public async Task<Produto> ObterPorIdAsync(long id)
+        public async Task<Produto?> ObterPorIdAsync(long id)
         {
             return await _context.Set<Produto>().FindAsync(id);
         }
 
         public async Task<List<Produto>> ListarTodosAsync()
         {
-            return await _context.Set<Produto>().ToListAsync();
+            return await _context.Set<Produto>()
+                .Include(p => p.Fabricante)
+                .ToListAsync();
         }
 
         public async Task AdicionarAsync(Produto produto)
@@ -30,9 +33,10 @@ namespace Tecnica.Domain.Daos
             await _context.Set<Produto>().AddAsync(produto);
         }
 
-        public async Task RemoverAsync(Produto produto)
+        public Task RemoverAsync(Produto produto)
         {
             _context.Set<Produto>().Remove(produto);
+            return Task.CompletedTask;
         }
     }
 }

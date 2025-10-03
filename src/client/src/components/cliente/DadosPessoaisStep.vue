@@ -1,11 +1,15 @@
 <template>
     <div class="p-fluid">
-        <h4>Dados Pessoais</h4>
 
         <div class="field grid">
             <div class="col-12 md:col-4">
                 <label for="cpfCnpj" class="font-bold">CPF/CNPJ*</label>
-                <InputMask id="cpfCnpj" v-model="form.cpfCnpj" :mask="cpfCnpjMask" placeholder="Digite o CPF ou CNPJ" />
+                <InputMask 
+                    id="cpfCnpj" 
+                    v-model="form.cpfCnpj" 
+                    :mask="cpfCnpjMask" 
+                    placeholder="Digite o CPF ou CNPJ"
+                    @input="onCpfCnpjInput" />
                 <small v-if="v$.cpfCnpj.$invalid && v$.cpfCnpj.$dirty" class="p-error">{{ v$.cpfCnpj.$errors[0].$message }}</small>
             </div>
             
@@ -37,11 +41,6 @@
                 <InputMask id="telefoneNumero" v-model="form.telefoneNumero" mask="9999-9999" placeholder="Telefone" />
             </div>
             
-            <div class="col-12 md:col-3">
-                <label for="status" class="font-bold">Status*</label>
-                <Dropdown id="status" v-model="form.status" :options="statusOptions" optionLabel="label" optionValue="value" placeholder="Selecione o status" />
-                <small v-if="v$.status.$invalid && v$.status.$dirty" class="p-error">{{ v$.status.$errors[0].$message }}</small>
-            </div>
         </div>
     </div>
 </template>
@@ -70,31 +69,119 @@ export default {
             nomeFantasia: props.cliente.nomeFantasia || '',
             contato: props.cliente.contato || '',
             telefoneDdd: props.cliente.telefoneDdd || '',
-            telefoneNumero: props.cliente.telefoneNumero || '',
-            status: props.cliente.status || 'Ativo'
+            telefoneNumero: props.cliente.telefoneNumero || ''
         });
 
-        const cpfCnpjMask = computed(() => {
-            return form.value.cpfCnpj && form.value.cpfCnpj.length > 11 ? '99.999.999/9999-99' : '999.999.999-99';
-        });
+        // Observa mudanças no prop cliente e atualiza o form
+        watch(() => props.cliente, (newCliente) => {
+            form.value.cpfCnpj = newCliente.cpfCnpj || '';
+            form.value.razaoSocial = newCliente.razaoSocial || '';
+            form.value.nomeFantasia = newCliente.nomeFantasia || '';
+            form.value.contato = newCliente.contato || '';
+            form.value.telefoneDdd = newCliente.telefoneDdd || '';
+            form.value.telefoneNumero = newCliente.telefoneNumero || '';
+            
+            // Atualiza a máscara do CPF/CNPJ
+            cpfCnpjMask.value = determineMask(newCliente.cpfCnpj);
+        }, { deep: true });
 
-        const statusOptions = [
-            { label: 'Ativo', value: 'Ativo' },
-            { label: 'Inativo', value: 'Inativo' },
-            { label: 'Bloqueado', value: 'Bloqueado' },
-            { label: 'Pendente', value: 'Pendente' }
-        ];
+        // Função para determinar a máscara baseada no valor
+        const determineMask = (value) => {
+            if (!value) return '999.999.999-99';
+            const cleanValue = value.replace(/\D/g, '');
+            return cleanValue.length <= 11 ? '999.999.999-99' : '99.999.999/9999-99';
+        };
+
+        const cpfCnpjMask = ref(determineMask(form.value.cpfCnpj));
+
+        const onCpfCnpjInput = (event) => {
+            const value = event.target.value.replace(/\D/g, ''); // Remove caracteres não numéricos
+            
+            // Atualiza a máscara baseado no número de dígitos
+            if (value.length <= 11) {
+                cpfCnpjMask.value = '999.999.999-99'; // CPF
+            } else {
+                cpfCnpjMask.value = '99.999.999/9999-99'; // CNPJ
+            }
+        };
+
+
+        // Funções de validação para CPF e CNPJ
+        const isValidCPF = (cpf) => {
+            const cleanCpf = cpf.replace(/\D/g, '');
+            if (cleanCpf.length !== 11) return false;
+            
+            // Verifica se todos os dígitos são iguais
+            if (/^(\d)\1{10}$/.test(cleanCpf)) return false;
+            
+            // Validação dos dígitos verificadores
+            let sum = 0;
+            for (let i = 0; i < 9; i++) {
+                sum += parseInt(cleanCpf.charAt(i)) * (10 - i);
+            }
+            let remainder = (sum * 10) % 11;
+            if (remainder === 10 || remainder === 11) remainder = 0;
+            if (remainder !== parseInt(cleanCpf.charAt(9))) return false;
+            
+            sum = 0;
+            for (let i = 0; i < 10; i++) {
+                sum += parseInt(cleanCpf.charAt(i)) * (11 - i);
+            }
+            remainder = (sum * 10) % 11;
+            if (remainder === 10 || remainder === 11) remainder = 0;
+            return remainder === parseInt(cleanCpf.charAt(10));
+        };
+
+        const isValidCNPJ = (cnpj) => {
+            const cleanCnpj = cnpj.replace(/\D/g, '');
+            if (cleanCnpj.length !== 14) return false;
+            
+            // Verifica se todos os dígitos são iguais
+            if (/^(\d)\1{13}$/.test(cleanCnpj)) return false;
+            
+            // Validação do primeiro dígito verificador
+            let sum = 0;
+            let weight = 2;
+            for (let i = 11; i >= 0; i--) {
+                sum += parseInt(cleanCnpj.charAt(i)) * weight;
+                weight = weight === 9 ? 2 : weight + 1;
+            }
+            let remainder = sum % 11;
+            const digit1 = remainder < 2 ? 0 : 11 - remainder;
+            if (digit1 !== parseInt(cleanCnpj.charAt(12))) return false;
+            
+            // Validação do segundo dígito verificador
+            sum = 0;
+            weight = 2;
+            for (let i = 12; i >= 0; i--) {
+                sum += parseInt(cleanCnpj.charAt(i)) * weight;
+                weight = weight === 9 ? 2 : weight + 1;
+            }
+            remainder = sum % 11;
+            const digit2 = remainder < 2 ? 0 : 11 - remainder;
+            return digit2 === parseInt(cleanCnpj.charAt(13));
+        };
+
+        const validateCpfCnpj = (value) => {
+            if (!value) return false;
+            const cleanValue = value.replace(/\D/g, '');
+            
+            if (cleanValue.length === 11) {
+                return isValidCPF(value);
+            } else if (cleanValue.length === 14) {
+                return isValidCNPJ(value);
+            }
+            return false;
+        };
 
         // Validações
         const rules = {
             cpfCnpj: { 
-                required: helpers.withMessage('CPF/CNPJ é obrigatório', required) 
+                required: helpers.withMessage('CPF/CNPJ é obrigatório', required),
+                valid: helpers.withMessage('CPF/CNPJ inválido', validateCpfCnpj)
             },
             razaoSocial: { 
                 required: helpers.withMessage('Razão Social é obrigatória', required) 
-            },
-            status: { 
-                required: helpers.withMessage('Status é obrigatório', required) 
             }
         };
 
@@ -117,8 +204,8 @@ export default {
         return {
             form,
             v$,
-            statusOptions,
-            cpfCnpjMask
+            cpfCnpjMask,
+            onCpfCnpjInput
         };
     }
 }

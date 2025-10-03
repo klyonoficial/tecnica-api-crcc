@@ -1,9 +1,9 @@
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Tecnica.Domain.Daos;
 using Tecnica.Domain.Dtos;
 using Tecnica.Domain.Entities;
-using Tecnica.Dtos;
 using Tecnica.Infra;
 
 namespace Tecnica.Controllers
@@ -53,6 +53,7 @@ namespace Tecnica.Controllers
                 Id = usuario.Id,
                 Nome = usuario.Nome,
                 Email = usuario.Email,
+                Login = usuario.Login,
                 Ativo = usuario.Ativo,
                 DeveAlterarSenha = usuario.DeveAlterarSenha
             };
@@ -60,7 +61,7 @@ namespace Tecnica.Controllers
 
         private Usuario ToEntity(UsuarioDto usuarioDto)
         {
-            return new Usuario(usuarioDto.Nome, usuarioDto.Email, Util.GerarSenhaAleatoria(),
+            return new Usuario(usuarioDto.Nome, usuarioDto.Email, usuarioDto.Login, Util.GerarSenhaAleatoria(),
             usuarioDto.DeveAlterarSenha);
         }
 
@@ -71,7 +72,7 @@ namespace Tecnica.Controllers
             if (usuario == null)
                 return NotFound();
 
-            usuario.Atualizar(usuarioDto.Nome, usuarioDto.Email, usuarioDto.Ativo, usuarioDto.DeveAlterarSenha);
+            usuario.Atualizar(usuarioDto.Nome, usuarioDto.Email, usuarioDto.Login, usuarioDto.Ativo, usuarioDto.DeveAlterarSenha);
 
             await _context.SaveChangesAsync();
 
