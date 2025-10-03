@@ -1,65 +1,28 @@
-# Etapa de build
+# Build Stage
 FROM node:20-alpine AS build
 WORKDIR /app
 
-# Copia package.json e package-lock.json para cache
 COPY package*.json ./
-
-# Instala dependências
 RUN npm install
-
-# Copia todo o código
 COPY . .
 
-# Build da aplicação para produção
+# Build do Vite
 RUN npm run build
 
-# Etapa runtime (servidor leve)
+# Runtime Stage
 FROM nginx:alpine
+WORKDIR /usr/share/nginx/html
 
-# Remove configuração default do nginx
-RUN rm /etc/nginx/conf.d/default.conf
+# Copia build
+COPY --from=build /app/dist .
 
-# Copia os arquivos de build do Vue.js para o Nginx
-COPY --from=build /app/dist /usr/share/nginx/html
+# Copia template do Nginx
+COPY nginx.conf.template /etc/nginx/conf.d/default.conf.template
 
-# Copia arquivo de configuração customizado para Nginx
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+# Cria config.js runtime com URL da API (do ENV do Heroku)
+RUN echo "window.VITE_API_URL = '${VITE_API_URL:-https://tecnica-api-crcc-f7d9bbf52931.herokuapp.com}';" > /usr/share/nginx/html/config.js
 
-# Expondo porta do container (Heroku usa $PORT)
-EXPOSE 80
+EXPOSE 8080
 
-CMD ["nginx", "-g", "daemon off;"]
-# Etapa de build
-FROM node:20-alpine AS build
-WORKDIR /app
-
-# Copia package.json e package-lock.json para cache
-COPY package*.json ./
-
-# Instala dependências
-RUN npm install
-
-# Copia todo o código
-COPY . .
-
-# Build da aplicação para produção
-RUN npm run build
-
-# Etapa runtime (servidor leve)
-FROM nginx:alpine
-
-# Remove configuração default do nginx
-RUN rm /etc/nginx/conf.d/default.conf
-
-# Copia arquivos de build do Vue.js para Nginx
-COPY --from=build /app/dist /usr/share/nginx/html
-
-# Copia arquivo de configuração customizado do Nginx
-COPY nginx.conf /etc/nginx/conf.d/default.conf
-
-# Expondo porta do container (Heroku redireciona via $PORT)
-EXPOSE 80
-
-# Comando para rodar Nginx
-CMD ["nginx", "-g", "daemon off;"]
+CMD envsubst '$PORT' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf \
+    && nginx -g 'daemon off;'
