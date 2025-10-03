@@ -59,6 +59,16 @@ Log.Information("Iniciando a execução das migrations...");
 MigrationRunner.Run(configuration);
 Log.Information("Migrations finalizadas.");
 
+Log.Information("Inicializando cache de cidades...");
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    await CidadeDao.InicializarCacheAsync(context);
+    var quantidadeCidades = CidadeDao.ObterQuantidadeCidadesCache();
+    Log.Information($"Cache de cidades inicializado com {quantidadeCidades} cidades.");
+}
+Log.Information("Cache de cidades inicializado.");
+
 
 app.UseSwagger();
 app.UseSwaggerUI(c =>

@@ -203,7 +203,7 @@ namespace Tecnica.Controllers
             return new EnderecoDto
             {
                 Id = endereco.Id,
-                ClienteId = endereco.PessoaId,
+                PessoaId = endereco.PessoaId,
                 Cep = endereco.Cep,
                 Logradouro = endereco.Logradouro ?? string.Empty,
                 CodigoIbge = endereco.CodigoIbge,
@@ -222,7 +222,7 @@ namespace Tecnica.Controllers
             return new ArquivoDto
             {
                 Id = arquivo.Id,
-                ClienteId = arquivo.ClienteId,
+                PessoaId = arquivo.PessoaId,
                 Tipo = arquivo.Tipo,
                 Nome = arquivo.Nome
             };

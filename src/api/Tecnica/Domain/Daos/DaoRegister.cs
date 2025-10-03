@@ -16,6 +16,7 @@ namespace Tecnica.Domain.Daos
             services.AddScoped<RotaCobrancaDao>();
             services.AddScoped<RotaEntregaDao>();
             services.AddScoped<VendaDao>();
+            services.AddScoped<CidadeDao>();
 
             return services;
         }

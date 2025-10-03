@@ -3,7 +3,7 @@ namespace Tecnica.Domain.Dtos
     public class EnderecoDto
     {
         public long Id { get; set; }
-        public long ClienteId { get; set; }
+        public long PessoaId { get; set; }
         public string Cep { get; set; }
         public string Logradouro { get; set; }
         public string? CodigoIbge { get; set; }

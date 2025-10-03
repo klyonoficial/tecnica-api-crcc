@@ -73,9 +73,10 @@ namespace Tecnica.Domain.Entities
             Assegure.NaoNulo(cpfCnpj, "O CPF/CNPJ deve ser informado.");
             Assegure.NaoNulo(razaoSocial, "A razão social deve ser informada.");
             Assegure.Que(diaCobranca > 0, "O dia de cobrança deve ser informado.");
+            Assegure.Que(Validation.IsValidCpfCnpj(cpfCnpj), "Um CPF/CNPJ válido deve ser informado.");
 
             VendedorId = vendedorId;
-            CpfCnpj = cpfCnpj;
+            CpfCnpj = cpfCnpj.RemoverCaracteresEspeciais();
             RazaoSocial = razaoSocial;
             NomeFantasia = nomeFantasia;
             Contato = contato;

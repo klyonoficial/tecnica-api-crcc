@@ -11,8 +11,8 @@ namespace Tecnica.Domain.Entities
         [Column("id")]
         public long Id { get; set; }
 
-        [Column("cliente_id")]
-        public long ClienteId { get; set; }
+        [Column("pessoa_id")]
+        public long PessoaId { get; set; }
 
         [Column("tipo")]
         public string Tipo { get; set; }
@@ -33,7 +33,7 @@ namespace Tecnica.Domain.Entities
         {
         }
 
-        [ForeignKey("ClienteId")]
+        [ForeignKey("PessoaId")]
         [InverseProperty("Arquivos")]
         public Cliente? Cliente { get; set; }
     }

@@ -1,8 +1,10 @@
 <template>
     <div class="p-fluid">
-        <div class="flex justify-content-between align-items-center mb-3">
+        <div class="mb-3">
             <h4>Endereços</h4>
-            <Button type="button" icon="pi pi-plus" label="Novo Endereço" @click="addEndereco" />
+            <a href="#" @click.prevent="addEndereco" class="p-link">
+                <i class="pi pi-plus mr-1"></i>Novo Endereço
+            </a>
         </div>
 
         <div v-if="enderecos.length === 0" class="empty-message p-4 text-center">
@@ -61,22 +63,8 @@
                             <InputText :id="'complemento-' + index" v-model="endereco.complemento" placeholder="Complemento" class="w-full" />
                         </div>
 
-                        <!-- Quinta linha: Bairro, Cidade e UF -->
+                        <!-- Quinta linha: UF, Cidade e Bairro -->
                         <div class="field grid">
-                            <div class="col-12 md:col-5">
-                                <label :for="'bairro-' + index" class="font-bold">Bairro*</label>
-                                <InputText :id="'bairro-' + index" v-model="endereco.bairro" placeholder="Bairro" class="w-full" />
-                                <small v-if="validations[index] && validations[index].bairro && validations[index].bairro.$invalid && validations[index].bairro.$dirty" class="p-error">
-                                    Bairro é obrigatório
-                                </small>
-                            </div>
-                            <div class="col-12 md:col-5">
-                                <label :for="'cidade-' + index" class="font-bold">Cidade*</label>
-                                <InputText :id="'cidade-' + index" v-model="endereco.cidade" placeholder="Cidade" class="w-full" />
-                                <small v-if="validations[index] && validations[index].cidade && validations[index].cidade.$invalid && validations[index].cidade.$dirty" class="p-error">
-                                    Cidade é obrigatória
-                                </small>
-                            </div>
                             <div class="col-12 md:col-2">
                                 <label :for="'uf-' + index" class="font-bold">UF*</label>
                                 <Dropdown :id="'uf-' + index" v-model="endereco.uf" :options="estados" placeholder="UF" class="w-full" />
@@ -84,21 +72,28 @@
                                     UF é obrigatória
                                 </small>
                             </div>
+                            <div class="col-12 md:col-5">
+                                <label :for="'cidade-' + index" class="font-bold">Cidade*</label>
+                                <Dropdown :id="'cidade-' + index" v-model="endereco.codigoIbge" :options="cidadesPorUf[endereco.uf] || []" 
+                                    optionLabel="nome" optionValue="codigoIbge" placeholder="Selecione a cidade" class="w-full" 
+                                    :loading="carregandoCidades[endereco.uf]" />
+                                <small v-if="validations[index] && validations[index].codigoIbge && validations[index].codigoIbge.$invalid && validations[index].codigoIbge.$dirty" class="p-error">
+                                    Cidade é obrigatória
+                                </small>
+                            </div>
+                            <div class="col-12 md:col-5">
+                                <label :for="'bairro-' + index" class="font-bold">Bairro*</label>
+                                <InputText :id="'bairro-' + index" v-model="endereco.bairro" placeholder="Bairro" class="w-full" />
+                                <small v-if="validations[index] && validations[index].bairro && validations[index].bairro.$invalid && validations[index].bairro.$dirty" class="p-error">
+                                    Bairro é obrigatório
+                                </small>
+                            </div>
                         </div>
 
                         <!-- Sexta linha: Opções -->
-                        <div class="field grid align-items-end">
-                            <div class="col-12 md:col-6">
-                                <div class="field-checkbox">
-                                    <Checkbox :id="'principal-' + index" v-model="endereco.principal" :binary="true" 
-                                        @change="setPrincipal(index)" />
-                                    <label :for="'principal-' + index" class="ml-2">Endereço Principal</label>
-                                </div>
-                            </div>
-                            <div class="col-12 md:col-6 flex justify-content-end">
-                                <Button type="button" icon="pi pi-trash" class="p-button-danger p-button-outlined" 
-                                    label="Remover" @click="removerEndereco(index)" />
-                            </div>
+                        <div class="field flex justify-content-end">
+                            <Button type="button" icon="pi pi-trash" class="p-button-danger p-button-outlined" 
+                                label="Remover" @click="removerEndereco(index)" />
                         </div>
                     </div>
                 </AccordionTab>
@@ -115,8 +110,8 @@ import Accordion from 'primevue/accordion';
 import AccordionTab from 'primevue/accordiontab';
 import InputMask from 'primevue/inputmask';
 import Dropdown from 'primevue/dropdown';
-import Checkbox from 'primevue/checkbox';
 import { Endereco } from '@/models/cliente.model';
+import CidadeService from '@/service/CidadeService';
 import axios from 'axios';
 
 export default {
@@ -124,8 +119,7 @@ export default {
         Accordion,
         AccordionTab,
         InputMask,
-        Dropdown,
-        Checkbox
+        Dropdown
     },
     props: {
         enderecos: {
@@ -137,6 +131,9 @@ export default {
     setup(props, { emit }) {
         const openIndex = ref(0);
         const validations = reactive([]);
+        const cidadesPorUf = reactive({});
+        const carregandoCidades = reactive({});
+        const cidadeService = new CidadeService();
 
         const estados = [
             'AC', 'AL', 'AM', 'AP', 'BA', 'CE', 'DF', 'ES', 'GO',
@@ -157,7 +154,7 @@ export default {
                 logradouro: { required },
                 numero: { required },
                 bairro: { required },
-                cidade: { required },
+                codigoIbge: { required },
                 uf: { required },
                 tipo: { required }
             }, endereco);
@@ -204,11 +201,22 @@ export default {
             validateAll();
         };
 
-        // Define um endereço como principal
-        const setPrincipal = (index) => {
-            props.enderecos.forEach((endereco, i) => {
-                endereco.principal = i === index;
-            });
+
+        // Busca cidades por UF
+        const buscarCidadesPorUf = async (uf) => {
+            if (!uf || cidadesPorUf[uf]) return; // Já carregou ou UF inválida
+            
+            carregandoCidades[uf] = true;
+            
+            try {
+                const cidades = await cidadeService.getCidadesByUF(uf);
+                cidadesPorUf[uf] = cidades;
+            } catch (error) {
+                console.error('Erro ao buscar cidades:', error);
+                cidadesPorUf[uf] = [];
+            } finally {
+                carregandoCidades[uf] = false;
+            }
         };
 
         // Busca CEP via API
@@ -224,6 +232,33 @@ export default {
                     endereco.bairro = response.data.bairro;
                     endereco.cidade = response.data.localidade;
                     endereco.uf = response.data.uf;
+                    
+                    // Busca cidades da UF quando CEP for preenchido
+                    await buscarCidadesPorUf(endereco.uf);
+                    
+                    // Se houver código IBGE, seleciona a cidade automaticamente
+                    if (response.data.ibge) {
+                        // Aguarda as cidades carregarem com timeout
+                        let tentativas = 0;
+                        const maxTentativas = 10;
+                        
+                        while (tentativas < maxTentativas && !cidadesPorUf[endereco.uf]) {
+                            await new Promise(resolve => setTimeout(resolve, 100));
+                            tentativas++;
+                        }
+                        
+                        // Busca a cidade pelo código IBGE
+                        const cidades = cidadesPorUf[endereco.uf];
+                        if (cidades && cidades.length > 0) {
+                            const cidadeEncontrada = cidades.find(cidade => 
+                                cidade.codigoIbge === response.data.ibge
+                            );
+                            
+                            if (cidadeEncontrada) {
+                                endereco.codigoIbge = cidadeEncontrada.codigoIbge;
+                            }
+                        }
+                    }
                 }
             } catch (error) {
                 console.error('Erro ao buscar CEP:', error);
@@ -233,14 +268,19 @@ export default {
         // Formata o cabeçalho do accordion
         const getEnderecoHeader = (endereco, index) => {
             const tipoLabel = tiposEndereco.find(t => t.value === endereco.tipo)?.label || 'Outros';
+            
+            // Busca o nome da cidade selecionada
+            let nomeCidade = '';
+            if (endereco.codigoIbge && cidadesPorUf[endereco.uf]) {
+                const cidadeSelecionada = cidadesPorUf[endereco.uf].find(c => c.codigoIbge === endereco.codigoIbge);
+                nomeCidade = cidadeSelecionada ? cidadeSelecionada.nome : '';
+            }
+            
             const enderecoInfo = endereco.logradouro ? 
-                `${endereco.logradouro}, ${endereco.numero}${endereco.complemento ? ', ' + endereco.complemento : ''} - ${endereco.cidade}/${endereco.uf}` : 
+                `${endereco.logradouro}, ${endereco.numero}${endereco.complemento ? ', ' + endereco.complemento : ''} - ${nomeCidade || endereco.cidade}/${endereco.uf}` : 
                 `Endereço ${index + 1}`;
                 
-            const headerInfo = `[${tipoLabel}] ${enderecoInfo}`;
-            return endereco.principal ? 
-                `${headerInfo} (Principal)` : 
-                headerInfo;
+            return `[${tipoLabel}] ${enderecoInfo}`;
         };
 
         // Verifica a validade de todos os endereços
@@ -270,10 +310,22 @@ export default {
             return isValid;
         };
 
+        // Observa mudanças na UF para carregar cidades
+        watch(() => props.enderecos.map(e => e.uf), (novasUfs) => {
+            novasUfs.forEach(uf => {
+                if (uf) {
+                    buscarCidadesPorUf(uf);
+                }
+            });
+        }, { deep: true });
+
         // Observa mudanças nos endereços para validação
         watch(() => [...props.enderecos], () => {
             validateAll();
         }, { deep: true });
+
+        // Carrega cidades do ES por padrão
+        buscarCidadesPorUf('ES');
 
         // Validação inicial
         validateAll();
@@ -283,9 +335,10 @@ export default {
             validations,
             estados,
             tiposEndereco,
+            cidadesPorUf,
+            carregandoCidades,
             addEndereco,
             removerEndereco,
-            setPrincipal,
             buscarCep,
             getEnderecoHeader
         };
@@ -334,21 +387,6 @@ export default {
     margin-left: 0.25rem;
 }
 
-.endereco-form .field-checkbox {
-    display: flex;
-    align-items: center;
-    margin-top: 0.5rem;
-}
-
-.endereco-form .field-checkbox .p-checkbox {
-    margin-right: 0.5rem;
-}
-
-.endereco-form .field-checkbox label {
-    margin-bottom: 0;
-    font-weight: normal;
-    cursor: pointer;
-}
 
 .endereco-form .p-error {
     display: block;

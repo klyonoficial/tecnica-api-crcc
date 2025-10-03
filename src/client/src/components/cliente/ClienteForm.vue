@@ -2,7 +2,6 @@
     <div class="grid">
         <div class="col-12">
             <div class="card">
-                <h5>Cadastro de Cliente</h5>
                 <TabView v-model:activeIndex="currentStep">
                     <TabPanel header="Dados Pessoais">
                         <DadosPessoaisStep 
@@ -43,7 +42,13 @@
                     </TabPanel>
                 </TabView>
 
-                <div class="flex justify-content-end mt-4">
+                <div class="flex justify-content-between mt-4">
+                    <Button 
+                        type="button" 
+                        label="Voltar" 
+                        icon="pi pi-arrow-left"
+                        class="p-button-secondary"
+                        @click="voltar" />
                     <Button 
                         type="submit" 
                         label="Salvar Cliente" 
@@ -148,6 +153,11 @@ export default {
             }
         };
 
+        const voltar = () => {
+            // Navegar de volta para a lista de clientes
+            window.history.back();
+        };
+
         // Carregar cliente se ID for fornecido
         if (clienteId) {
             loadCliente();
@@ -160,7 +170,8 @@ export default {
             formValid,
             submitting,
             updateStepValidity,
-            onSubmit
+            onSubmit,
+            voltar
         };
     }
 }
