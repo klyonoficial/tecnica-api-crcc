@@ -2,7 +2,6 @@
     <div>
         <div class="flex align-items-center justify-content-between mb-3">
             <h2 class="m-0">{{ isEdit ? 'Editar Fabricante' : 'Cadastro de Fabricante' }}</h2>
-            <Button label="Voltar" icon="pi pi-arrow-left" @click="$router.push('/fabricantes')" />
         </div>
         <FabricanteForm :id="id" />
     </div>

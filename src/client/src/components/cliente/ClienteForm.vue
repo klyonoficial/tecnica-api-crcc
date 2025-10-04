@@ -42,20 +42,14 @@
                     </TabPanel>
                 </TabView>
 
-                <div class="flex justify-content-between mt-4">
-                    <Button 
-                        type="button" 
-                        label="Voltar" 
-                        icon="pi pi-arrow-left"
-                        class="p-button-secondary"
-                        @click="voltar" />
-                    <Button 
-                        type="submit" 
-                        label="Salvar Cliente" 
-                        icon="pi pi-check"
-                        :disabled="submitting"
-                        :loading="submitting"
-                        @click="onSubmit" />
+                <div class="flex justify-content-between gap-5">
+                    <Button label="Voltar" icon="pi pi-arrow-left" @click="voltar" />
+                    <Button type="submit"
+                            label="Salvar"
+                            icon="pi pi-save"
+                            :disabled="submitting"
+                            :loading="submitting"
+                            @click="onSubmit" />
                 </div>
             </div>
         </div>

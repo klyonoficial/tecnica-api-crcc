@@ -18,18 +18,12 @@
                         <small v-if="submitted && !fabricante.nome" class="p-error">Nome é obrigatório.</small>
                     </div>
 
-                    <div class="flex justify-content-end gap-2">
-                        <Button 
-                            type="button" 
-                            label="Cancelar" 
-                            icon="pi pi-times" 
-                            class="p-button-secondary" 
-                            @click="$router.push('/fabricantes')" 
-                        />
+                    <div class="flex justify-content-end gap-5">
+                        <!--<Button label="Voltar" icon="pi pi-arrow-left" @click="$router.push('/fabricantes')" />-->
                         <Button 
                             type="submit" 
                             :label="isEdit ? 'Atualizar' : 'Salvar'" 
-                            icon="pi pi-check" 
+                            icon="pi pi-save"
                             :loading="submitting"
                         />
                     </div>

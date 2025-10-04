@@ -1,8 +1,7 @@
 <template>
     <div>
         <div class="flex align-items-center justify-content-between mb-3">
-            <h2 class="m-0">{{ isEdit ? 'Editar Produto' : 'Cadastro de Produto' }}</h2>
-            <Button label="Voltar" icon="pi pi-arrow-left" @click="$router.push('/produtos')" />
+            <h2 class="m-0">{{ isEdit ? 'Editar Produto' : 'Cadastro de Produto' }}</h2>            
         </div>
         <ProdutoForm :id="id" />
     </div>
