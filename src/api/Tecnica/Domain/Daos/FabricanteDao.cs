@@ -25,14 +25,14 @@ namespace Tecnica.Domain.Daos
             return await _context.Set<Fabricante>().ToListAsync();
         }
 
-        public async Task AdicionarAsync(Fabricante fornecedor)
+        public async Task AdicionarAsync(Fabricante fabricante)
         {
-            await _context.Set<Fabricante>().AddAsync(fornecedor);
+            await _context.Set<Fabricante>().AddAsync(fabricante);
         }
 
-        public async Task RemoverAsync(Fabricante fornecedor)
+        public async Task RemoverAsync(Fabricante fabricante)
         {
-            _context.Set<Fabricante>().Remove(fornecedor);
+            _context.Set<Fabricante>().Remove(fabricante);
         }
     }
 }

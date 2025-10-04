@@ -7,14 +7,14 @@ namespace Tecnica.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class FornecedorController : ControllerBase
+    public class FabricanteController : ControllerBase
     {
-        private readonly FabricanteDao _fornecedorDao;
+        private readonly FabricanteDao _fabricanteDao;
         private readonly ApplicationDbContext _context;
 
-        public FornecedorController(FabricanteDao fornecedorDao, ApplicationDbContext context)
+        public FabricanteController(FabricanteDao fabricanteDao, ApplicationDbContext context)
         {
-            _fornecedorDao = fornecedorDao;
+            _fabricanteDao = fabricanteDao;
             _context = context;
         }
 
@@ -22,7 +22,7 @@ namespace Tecnica.Controllers
         [HttpGet]
         public async Task<IActionResult> GetFabricantes()
         {
-            var lista = await _fornecedorDao.ListarTodosAsync();
+            var lista = await _fabricanteDao.ListarTodosAsync();
             var ordenada = lista.OrderBy(f => f.Nome).Select(ToDto);
             return Ok(ordenada);
         }
@@ -31,47 +31,47 @@ namespace Tecnica.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetFabricante(long id)
         {
-            var fornecedor = await _fornecedorDao.ObterPorIdAsync(id);
-            if (fornecedor == null)
+            var fabricante = await _fabricanteDao.ObterPorIdAsync(id);
+            if (fabricante == null)
                 return NotFound();
-            return Ok(ToDto(fornecedor));
+            return Ok(ToDto(fabricante));
         }
 
         // POST /fabricante
         [HttpPost]
-        public async Task<IActionResult> CreateFabricante([FromBody] FornecedorDto fornecedorDto)
+        public async Task<IActionResult> CreateFabricante([FromBody] FabricanteDto fabricanteDto)
         {
-            var fornecedor = ToEntity(fornecedorDto);
-            await _fornecedorDao.AdicionarAsync(fornecedor);
+            var fabricante = ToEntity(fabricanteDto);
+            await _fabricanteDao.AdicionarAsync(fabricante);
             await _context.SaveChangesAsync();
-            return CreatedAtAction(nameof(GetFabricante), new { id = fornecedor.Id });
+            return CreatedAtAction(nameof(GetFabricante), new { id = fabricante.Id });
         }
 
         // PUT /fabricante
         [HttpPut]
-        public async Task<IActionResult> UpdateFabricante([FromBody] FornecedorDto fornecedorDto)
+        public async Task<IActionResult> UpdateFabricante([FromBody] FabricanteDto fabricanteDto)
         {
-            var fornecedor = await _fornecedorDao.ObterPorIdAsync(fornecedorDto.Id);
-            if (fornecedor == null)
+            var fabricante = await _fabricanteDao.ObterPorIdAsync(fabricanteDto.Id);
+            if (fabricante == null)
                 return NotFound();
 
-            fornecedor.Atualizar(fornecedorDto.Nome);
+            fabricante.Atualizar(fabricanteDto.Nome);
 
             await _context.SaveChangesAsync();
 
             return Ok();
         }
 
-        private FornecedorDto ToDto(Fabricante f)
+        private FabricanteDto ToDto(Fabricante f)
         {
-            return new FornecedorDto
+            return new FabricanteDto
             {
                 Id = f.Id,
                 Nome = f.Nome
             };
         }
 
-        private Fabricante ToEntity(FornecedorDto dto)
+        private Fabricante ToEntity(FabricanteDto dto)
         {
             return new Fabricante(dto.Nome);
         }

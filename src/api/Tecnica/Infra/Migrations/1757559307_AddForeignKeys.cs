@@ -8,10 +8,12 @@ namespace Tecnica.Infra.Migrations
     {
         public override void Up()
         {
+            /*
+            
             Create.ForeignKey("fk_produto_fabricante")
                 .FromTable("produto").ForeignColumn("fabricante_id")
                 .ToTable("fabricante").PrimaryColumn("id");
-            
+
             Create.ForeignKey("fk_pessoa_vendedor")
                 .FromTable("pessoa").ForeignColumn("vendedor_id")
                 .ToTable("usuario").PrimaryColumn("id");
@@ -83,6 +85,7 @@ namespace Tecnica.Infra.Migrations
             Create.ForeignKey("fk_permissao_usuario")
                 .FromTable("permissao").ForeignColumn("usuario_id")
                 .ToTable("usuario").PrimaryColumn("id");
+            */
         }
 
         public override void Down()
