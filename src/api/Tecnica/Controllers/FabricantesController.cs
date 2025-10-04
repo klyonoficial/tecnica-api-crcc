@@ -44,7 +44,10 @@ namespace Tecnica.Controllers
             var fabricante = ToEntity(fabricanteDto);
             await _fabricanteDao.AdicionarAsync(fabricante);
             await _context.SaveChangesAsync();
-            return CreatedAtAction(nameof(GetFabricante), new { id = fabricante.Id });
+
+            return Ok(ToDto(fabricante));
+            //TODO: REVISAR - System.InvalidOperationException: No route matches the supplied values.
+            //return CreatedAtAction(nameof(GetFabricante), new { id = fabricante.Id });
         }
 
         // PUT /fabricante

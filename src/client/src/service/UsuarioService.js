@@ -14,10 +14,10 @@ export default class UsuarioService {
         const dto = {
             id: usuario.id ?? 0, // Garante que id nunca ser� nulo
             nome: usuario.nome,
-            login: usuario.login,
+            login: "dev",
             email: usuario.email,
             ativo: usuario.ativo,
-            deveAlterarSenha: usuario.deveAlterarSenha
+            deveAlterarSenha: true
         };
         if (usuario.id) {
             return apiClient.put('/usuarios', dto).then(res => res.data);

@@ -102,7 +102,10 @@ namespace Tecnica.Api.Controllers
             await _context.SaveChangesAsync();
 
             vendaDto.Id = venda.Id;
-            return CreatedAtAction(nameof(GetVendas), new { id = venda.Id }, vendaDto);
+
+            return Ok(vendaDto);
+            //TODO: REVISAR - System.InvalidOperationException: No route matches the supplied values.
+            //return CreatedAtAction(nameof(GetVendas), new { id = venda.Id }, vendaDto);
         }
 
         [HttpPut("{id}")]

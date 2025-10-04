@@ -1,4 +1,4 @@
-import { apiClient } from '@/config/api';
+﻿import { apiClient } from '@/config/api';
 
 class ProdutoService {
     
@@ -13,12 +13,16 @@ class ProdutoService {
     }
     
     saveProduto(produto) {
+        const dto = {
+            id: usuario.id ?? 0, // Garante que id nunca ser� nulo
+            nome: produto.nome,
+            fabricanteId: produto.fabricanteId
+        };
+        
         if (produto.id) {
-            return apiClient.put('/produtos', produto)
-                .then(res => res.data);
+            return apiClient.put('/produtos', dto).then(res => res.data);
         } else {
-            return apiClient.post('/produtos', produto)
-                .then(res => res.data);
+            return apiClient.post('/produtos', dto).then(res => res.data);
         }
     }
     

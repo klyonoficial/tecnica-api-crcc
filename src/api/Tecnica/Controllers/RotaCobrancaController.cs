@@ -61,7 +61,9 @@ namespace Tecnica.Controllers
 
             rotaCobrancaDto.Id = rotaCobranca.Id;
 
-            return CreatedAtAction(nameof(GetRotaCobrancaPorData), new { data = rotaCobranca.Data.Date }, rotaCobrancaDto);
+            return Ok(rotaCobrancaDto);
+            //TODO: REVISAR - System.InvalidOperationException: No route matches the supplied values.
+            //return CreatedAtAction(nameof(GetRotaCobrancaPorData), new { data = rotaCobranca.Data.Date }, rotaCobrancaDto);
         }
 
         // PUT /rota-cobranca/{id}/aprovacao - RotaCobrancaAprovacaoDto
