@@ -54,8 +54,9 @@ namespace Tecnica.Controllers
             {
                 Id = Produto.Id,
                 Nome = Produto.Nome,
-                FabricanteId = Produto.FabricanteId,
-                FabricanteNome = Produto.Fabricante?.Nome ?? string.Empty
+                FabricanteId = Produto.FabricanteId
+                //TODO: REVISAR
+                //FabricanteNome = Produto.Fabricante?.Nome ?? string.Empty
             };
         }
 

@@ -14,9 +14,10 @@ class ProdutoService {
     
     saveProduto(produto) {
         const dto = {
-            id: usuario.id ?? 0, // Garante que id nunca ser� nulo
+            id: produto.id ?? 0, // Garante que id nunca ser� nulo
             nome: produto.nome,
-            fabricanteId: produto.fabricanteId
+            fabricanteId: produto.fabricanteId,
+            fabricanteNome: produto.fabricanteNome
         };
         
         if (produto.id) {

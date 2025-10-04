@@ -7,12 +7,12 @@ namespace Tecnica.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class FabricanteController : ControllerBase
+    public class FabricantesController : ControllerBase
     {
         private readonly FabricanteDao _fabricanteDao;
         private readonly ApplicationDbContext _context;
 
-        public FabricanteController(FabricanteDao fabricanteDao, ApplicationDbContext context)
+        public FabricantesController(FabricanteDao fabricanteDao, ApplicationDbContext context)
         {
             _fabricanteDao = fabricanteDao;
             _context = context;

@@ -125,6 +125,11 @@ const router = createRouter({
                     component: () => import('@/views/pages/ClienteFormPage.vue')
                 },
                 {
+                    path: '/fabricantes/novo',
+                    name: 'fabricante-novo',
+                    component: () => import('@/views/pages/FabricanteFormPage.vue')
+                },
+                {
                     path: '/produtos',
                     name: 'produtos',
                     component: () => import('@/components/produto/ProdutoList.vue')
