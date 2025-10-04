@@ -125,9 +125,20 @@ const router = createRouter({
                     component: () => import('@/views/pages/ClienteFormPage.vue')
                 },
                 {
+                    path: '/fabricantes',
+                    name: 'fabricantes',
+                    component: () => import('@/components/fabricante/FabricanteList.vue')
+                },
+                {
                     path: '/fabricantes/novo',
                     name: 'fabricante-novo',
                     component: () => import('@/views/pages/FabricanteFormPage.vue')
+                },
+                {
+                    path: '/fabricantes/:id/editar',
+                    name: 'fabricante-editar',
+                    component: () => import('@/views/pages/FabricanteFormPage.vue'),
+                    props: route => ({ id: parseInt(route.params.id) })
                 },
                 {
                     path: '/produtos',

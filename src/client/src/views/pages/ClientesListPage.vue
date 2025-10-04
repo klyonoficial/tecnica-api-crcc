@@ -1,10 +1,6 @@
 <template>
-    <div class="layout-content">
-        <div class="grid">
-            <div class="col-12">
-                <ClienteList />
-            </div>
-        </div>
+    <div>
+        <ClienteList />
     </div>
 </template>
 
@@ -18,4 +14,3 @@ export default {
     }
 };
 </script>
-

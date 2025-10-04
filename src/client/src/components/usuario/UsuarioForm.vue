@@ -33,8 +33,9 @@
             <label for="ativo">Ativo</label>
           </div>
           <div class="flex justify-content-end gap-2 mt-4">
-            <Button type="submit" label="Salvar" icon="pi pi-save" class="p-button-success" />
-            <Button v-if="usuario.id" type="button" label="Redefinir Senha" icon="pi pi-refresh" class="p-button-warning" @click="onResetSenha" />
+              <Button label="Voltar" icon="pi pi-arrow-left" @click="$router.push('/usuarios')" />
+              <Button type="submit" label="Salvar" icon="pi pi-save" />
+              <Button v-if="usuario.id" type="button" label="Redefinir Senha" icon="pi pi-refresh" class="p-button-warning" @click="onResetSenha" />
           </div>
         </form>
       </div>

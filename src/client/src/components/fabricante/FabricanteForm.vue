@@ -19,7 +19,7 @@
                     </div>
 
                     <div class="flex justify-content-end gap-5">
-                        <!--<Button label="Voltar" icon="pi pi-arrow-left" @click="$router.push('/fabricantes')" />-->
+                        <Button label="Voltar" icon="pi pi-arrow-left" @click="$router.push('/fabricantes')" />
                         <Button 
                             type="submit" 
                             :label="isEdit ? 'Atualizar' : 'Salvar'" 

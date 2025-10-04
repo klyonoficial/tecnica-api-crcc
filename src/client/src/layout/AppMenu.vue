@@ -21,11 +21,16 @@ const model = ref([
                 icon: 'pi pi-fw pi-user-plus', 
                 to: '/clientes/novo'
             },*/
-            {
+            { 
+                label: 'Fabricantes', 
+                icon: 'pi pi-fw pi-box', 
+                to: '/fabricantes'
+            },
+            /*{
                 label: 'Novo Fabricante',
                 icon: 'pi pi-fw pi-plus',
                 to: '/fabricantes/novo'
-            },
+            },*/
             { 
                 label: 'Produtos', 
                 icon: 'pi pi-fw pi-box', 
@@ -40,12 +45,12 @@ const model = ref([
                 label: 'Usuários', 
                 icon: 'pi pi-fw pi-users', 
                 to: '/usuarios'
-            },
+            }/*,
             {
                 label: 'Novo Usuário',
                 icon: 'pi pi-fw pi-user-plus',
                 to: '/usuarios/novo'
-            }
+            }*/
         ]
    },
    /*  
