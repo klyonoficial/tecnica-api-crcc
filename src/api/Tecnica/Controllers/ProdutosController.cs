@@ -42,7 +42,10 @@ namespace Tecnica.Controllers
             var Produto = ToEntity(ProdutoDto);
             await _ProdutoDao.AdicionarAsync(Produto);
             await _context.SaveChangesAsync();
-            return CreatedAtAction(nameof(GetProduto), new { id = Produto.Id });
+
+            return Ok(ToDto(Produto));
+            //TODO: REVISAR - System.InvalidOperationException: No route matches the supplied values.
+            //return CreatedAtAction(nameof(GetProduto), new { id = Produto.Id });
         }
 
         private ProdutoDto ToDto(Produto Produto)
@@ -51,8 +54,9 @@ namespace Tecnica.Controllers
             {
                 Id = Produto.Id,
                 Nome = Produto.Nome,
-                FabricanteId = Produto.FabricanteId,
-                FabricanteNome = Produto.Fabricante?.Nome ?? string.Empty
+                FabricanteId = Produto.FabricanteId
+                //TODO: REVISAR
+                //FabricanteNome = Produto.Fabricante?.Nome ?? string.Empty
             };
         }
 

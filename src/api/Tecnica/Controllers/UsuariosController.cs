@@ -43,7 +43,10 @@ namespace Tecnica.Controllers
             var usuario = ToEntity(usuarioDto);
             await _usuarioDao.AdicionarAsync(usuario);
             await _context.SaveChangesAsync();
-            return CreatedAtAction(nameof(GetUsuario), new { id = usuario.Id });
+
+            return Ok(ToDto(usuario));
+            //TODO: REVISAR - System.InvalidOperationException: No route matches the supplied values.
+            //return CreatedAtAction(nameof(GetUsuario), new { id = usuario.Id }); 
         }
 
         private UsuarioDto ToDto(Usuario usuario)

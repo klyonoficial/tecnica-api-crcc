@@ -7,44 +7,38 @@
                 <form @submit.prevent="onSubmit" class="p-fluid">
                     <div class="field">
                         <label for="nome" class="block font-bold mb-2">Nome *</label>
-                        <InputText 
-                            id="nome" 
-                            v-model="produto.nome" 
-                            :class="{ 'p-invalid': submitted && !produto.nome }"
-                            required="true" 
-                            autofocus 
-                            fluid
-                        />
+                        <InputText id="nome"
+                                   v-model="produto.nome"
+                                   :class="{ 'p-invalid': submitted && !produto.nome }"
+                                   required="true"
+                                   autofocus
+                                   fluid />
                         <small v-if="submitted && !produto.nome" class="p-error">Nome é obrigatório.</small>
                     </div>
 
                     <div class="field">
-                        <label for="fabricanteId" class="block font-bold mb-2">ID do Fabricante *</label>
-                        <InputNumber 
-                            id="fabricanteId" 
-                            v-model="produto.fabricanteId" 
-                            :class="{ 'p-invalid': submitted && !produto.fabricanteId }"
-                            required="true"
-                            :min="1"
-                            fluid
-                        />
-                        <small v-if="submitted && !produto.fabricanteId" class="p-error">ID do Fabricante é obrigatório.</small>
+                        <label for="fabricanteId" class="block font-bold mb-2">Fabricante *</label>
+                        <Dropdown id="fabricanteId"
+                                  v-model="produto.fabricanteId"
+                                  :options="fabricantes"
+                                  optionLabel="label"
+                                  optionValue="value"
+                                  placeholder="Selecione"
+                                  class="w-full"
+                                  required />
+                        <small v-if="submitted && !produto.fabricanteId" class="p-error">Fabricante é obrigatório.</small>
                     </div>
 
                     <div class="flex justify-content-end gap-2">
-                        <Button 
-                            type="button" 
-                            label="Cancelar" 
-                            icon="pi pi-times" 
-                            class="p-button-secondary" 
-                            @click="$router.push('/produtos')" 
-                        />
-                        <Button 
-                            type="submit" 
-                            :label="isEdit ? 'Atualizar' : 'Salvar'" 
-                            icon="pi pi-check" 
-                            :loading="submitting"
-                        />
+                        <Button type="button"
+                                label="Cancelar"
+                                icon="pi pi-times"
+                                class="p-button-secondary"
+                                @click="$router.push('/produtos')" />
+                        <Button type="submit"
+                                :label="isEdit ? 'Atualizar' : 'Salvar'"
+                                icon="pi pi-check"
+                                :loading="submitting" />
                     </div>
                 </form>
             </div>
@@ -53,85 +47,105 @@
 </template>
 
 <script>
-import { ref, reactive, onMounted, computed } from 'vue';
-import { useToast } from 'primevue/usetoast';
-import { useRouter } from 'vue-router';
-import ProdutoService from '@/service/ProdutoService';
-import { useErrorHandler } from '@/utils/errorHandler';
+    import { ref, reactive, onMounted, computed } from 'vue';
+    import { useToast } from 'primevue/usetoast';
+    import { useRouter } from 'vue-router';
+    import ProdutoService from '@/service/ProdutoService';
+    import FabricanteService from '@/service/FabricanteService';
+    import { useErrorHandler } from '@/utils/errorHandler';
 
-export default {
-    props: {
-        id: {
-            type: Number,
-            default: null
-        }
-    },
-    setup(props) {
-        const toast = useToast();
-        const { handleError } = useErrorHandler();
-        const router = useRouter();
-        const produtoService = new ProdutoService();
-        const produto = reactive({
-            id: null,
-            nome: '',
-            fabricanteId: null
-        });
-        const submitted = ref(false);
-        const submitting = ref(false);
+    export default {
+        props: {
+            id: {
+                type: Number,
+                default: null
+            }
+        },
+        setup(props) {
+            const toast = useToast();
+            const { handleError } = useErrorHandler();
+            const router = useRouter();
+            const produtoService = new ProdutoService();
+            const fabricanteService = new FabricanteService();
+            const produto = reactive({
+                id: null,
+                nome: '',
+                fabricanteId: null
+            });
 
-        const isEdit = computed(() => props.id !== null);
+            /** @type
+            { import('vue').Ref<Array<{ label: string; value: number }>> } */
+            const fabricantes = ref([]);
 
-        const loadProduto = async () => {
-            if (props.id) {
+            const submitted = ref(false);
+            const submitting = ref(false);
+
+            const isEdit = computed(() => props.id !== null);
+
+            const loadProduto = async () => {
+                if (props.id) {
+                    try {
+                        const data = await produtoService.getProduto(props.id);
+                        Object.assign(produto, data);
+                    } catch (error) {
+                        handleError(error);
+                    }
+                }
+            };
+
+            const loadFabricante = async () => {
                 try {
-                    const data = await produtoService.getProduto(props.id);
-                    Object.assign(produto, data);
+                    const data = await fabricanteService.getFabricantes();
+                    fabricantes.value = data.map(fab => ({ label: fab.nome, value: Number(fab.id) }));
+
                 } catch (error) {
                     handleError(error);
+                }                
+            };
+
+            const onSubmit = async () => {
+                submitted.value = true;
+
+                if (!produto.nome || !produto.fabricanteId) {
+                    return;
                 }
-            }
-        };
 
-        const onSubmit = async () => {
-            submitted.value = true;
+                submitting.value = true;
+                try {
+                    await produtoService.saveProduto(produto);
+                    toast.add({
+                        severity: 'success',
+                        summary: 'Sucesso',
+                        detail: isEdit.value ? 'Produto atualizado com sucesso!' : 'Produto criado com sucesso!',
+                        life: 3000
+                    });
+                    // Redirecionar para a lista
+                    router.push('/produtos');
+                } catch (error) {
+                    handleError(error);
+                } finally {
+                    submitting.value = false;
+                }
+            };
 
-            if (!produto.nome || !produto.fabricanteId) {
-                return;
-            }
+            onMounted(() => {
+                loadFabricante();
 
-            submitting.value = true;
-            try {
-                await produtoService.saveProduto(produto);
-                toast.add({ 
-                    severity: 'success', 
-                    summary: 'Sucesso', 
-                    detail: isEdit.value ? 'Produto atualizado com sucesso!' : 'Produto criado com sucesso!', 
-                    life: 3000 
-                });
-                // Redirecionar para a lista
-                router.push('/produtos');
-            } catch (error) {
-                handleError(error);
-            } finally {
-                submitting.value = false;
-            }
-        };
+                if (props.id) {
+                    loadProduto();
+                }                
+            });
 
-        onMounted(() => {
-            if (props.id) {
-                loadProduto();
-            }
-        });
-
-        return {
-            produto,
-            submitted,
-            submitting,
-            isEdit,
-            onSubmit
-        };
+            return {
+                produto,
+                fabricantes,
+                submitted,
+                submitting,
+                isEdit,
+                onSubmit
+            };
+        }
     }
-}
 </script>
 
 <style scoped>

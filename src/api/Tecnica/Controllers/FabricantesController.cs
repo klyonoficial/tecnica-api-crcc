@@ -7,12 +7,12 @@ namespace Tecnica.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class FabricanteController : ControllerBase
+    public class FabricantesController : ControllerBase
     {
         private readonly FabricanteDao _fabricanteDao;
         private readonly ApplicationDbContext _context;
 
-        public FabricanteController(FabricanteDao fabricanteDao, ApplicationDbContext context)
+        public FabricantesController(FabricanteDao fabricanteDao, ApplicationDbContext context)
         {
             _fabricanteDao = fabricanteDao;
             _context = context;
@@ -44,7 +44,10 @@ namespace Tecnica.Controllers
             var fabricante = ToEntity(fabricanteDto);
             await _fabricanteDao.AdicionarAsync(fabricante);
             await _context.SaveChangesAsync();
-            return CreatedAtAction(nameof(GetFabricante), new { id = fabricante.Id });
+
+            return Ok(ToDto(fabricante));
+            //TODO: REVISAR - System.InvalidOperationException: No route matches the supplied values.
+            //return CreatedAtAction(nameof(GetFabricante), new { id = fabricante.Id });
         }
 
         // PUT /fabricante

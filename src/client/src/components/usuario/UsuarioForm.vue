@@ -77,7 +77,12 @@ export default {
   methods: {
     onSubmit() {
       this.service.saveUsuario(this.usuario).then(() => {
-        this.$emit('saved')
+          this.$emit('saved')
+          this.usuario = {
+              email: '',
+              nome: ''             
+          }
+          alert('Usuário salvo com sucesso!')
       })
     },
     onResetSenha() {

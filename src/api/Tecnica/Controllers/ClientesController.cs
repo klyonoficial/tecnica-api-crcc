@@ -71,7 +71,10 @@ namespace Tecnica.Controllers
             var cliente = new Cliente(dto.VendedorId!.Value, dto.CpfCnpj, dto.RazaoSocial, dto.NomeFantasia, dto.Contato, dto.TelefoneDdd, dto.TelefoneNumero, dto.DiaCobranca!.Value, dto.DadosSerasa, enderecos, arquivos);
             await _clienteDao.AdicionarAsync(cliente);
             await _context.SaveChangesAsync();
-            return CreatedAtAction(nameof(GetCliente), new { id = cliente.Id }, ToDto(cliente));
+
+            return Ok(ToDto(cliente));
+            //TODO: REVISAR - System.InvalidOperationException: No route matches the supplied values.
+            //return CreatedAtAction(nameof(GetCliente), new { id = cliente.Id }, ToDto(cliente));
         }
 
         [HttpPut]
