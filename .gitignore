@@ -61,3 +61,4 @@ nunit-*.xml
 /.vs/*
 /src/.vs/*
 /src/api/.vs/*
+/src/client/.vs/*
