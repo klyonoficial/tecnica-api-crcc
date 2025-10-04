@@ -35,14 +35,14 @@ builder.Logging.AddSerilog(Log.Logger);
 builder.Host.UseSerilog(Log.Logger);
 
 // CORS - permite qualquer origem (útil para front Docker ou localhost)
-var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+const string CorsPolicy = "ClientCors";
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy(name: MyAllowSpecificOrigins,
+    options.AddPolicy(CorsPolicy,
                       policy =>
                       {
-                          policy.WithOrigins("http://localhost:8080") // endereço do seu front Vue
+                          policy.WithOrigins("https://tecnica-client-crcc-5e3a0b2d8fd9.herokuapp.com") // endereço do seu front Vue
                                 .AllowAnyHeader()
                                 .AllowAnyMethod();
                       });
@@ -59,7 +59,7 @@ builder.WebHost.ConfigureKestrel(options =>
 var app = builder.Build();
 
 // CORS precisa ser chamado antes do UseRouting e endpoints
-app.UseCors("AllowAll");
+app.UseCors(CorsPolicy);
 
 // Swagger
 app.UseSwagger();
