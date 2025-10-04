@@ -22,10 +22,6 @@ namespace Tecnica.Infra.Migrations
                 .WithColumn("data_aprovou").AsDateTime().Nullable()
                 .WithColumn("data_cadastro").AsDateTime().NotNullable()
                 .WithColumn("dados_serasa").AsCustom("text").Nullable();
-
-            Create.ForeignKey("fk_pessoa_vendedor")
-                .FromTable("pessoa").ForeignColumn("vendedor_id")
-                .ToTable("usuario").PrimaryColumn("id");
         }
 
         public override void Down()

@@ -26,15 +26,7 @@ namespace Tecnica.Infra.Migrations
                 .WithColumn("endereco_UF").AsCustom("varchar(2)").Nullable()
                 .WithColumn("endereco_numero").AsCustom("varchar(20)").Nullable()
                 .WithColumn("endereco_complemento").AsCustom("varchar(200)").Nullable()
-                .WithColumn("endereco_tipo").AsCustom("varchar(5)").Nullable();
-
-            Create.ForeignKey("fk_venda_pessoa")
-                .FromTable("venda").ForeignColumn("pessoa_id")
-                .ToTable("pessoa").PrimaryColumn("id");
-
-            Create.ForeignKey("fk_venda_vendedor")
-                .FromTable("venda").ForeignColumn("vendedor_id")
-                .ToTable("usuario").PrimaryColumn("id");
+                .WithColumn("endereco_tipo").AsCustom("varchar(5)").Nullable();            
         }
 
         public override void Down()

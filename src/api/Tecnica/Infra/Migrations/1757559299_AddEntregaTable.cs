@@ -12,14 +12,6 @@ namespace Tecnica.Infra.Migrations
                 .WithColumn("rota_entrega_id").AsInt64().NotNullable()
                 .WithColumn("venda_id").AsInt64().NotNullable()
                 .WithColumn("status").AsCustom("varchar(5)").NotNullable();
-
-            Create.ForeignKey("fk_entrega_rota_entrega")
-                .FromTable("entrega").ForeignColumn("rota_entrega_id")
-                .ToTable("rota_entrega").PrimaryColumn("id");
-
-            Create.ForeignKey("fk_entrega_venda")
-                .FromTable("entrega").ForeignColumn("venda_id")
-                .ToTable("venda").PrimaryColumn("id");
         }
 
         public override void Down()

@@ -18,10 +18,6 @@ namespace Tecnica.Infra.Migrations
                 .WithColumn("numero").AsCustom("varchar(20)").Nullable()
                 .WithColumn("complemento").AsCustom("varchar(200)").Nullable()
                 .WithColumn("tipo").AsCustom("varchar(5)").Nullable();
-
-            Create.ForeignKey("fk_endereco_pessoa")
-                .FromTable("endereco").ForeignColumn("pessoa_id")
-                .ToTable("pessoa").PrimaryColumn("id");
         }
 
         public override void Down()

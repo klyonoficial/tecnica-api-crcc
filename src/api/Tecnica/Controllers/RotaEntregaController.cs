@@ -61,7 +61,10 @@ namespace Tecnica.Api.Controllers
             await _context.SaveChangesAsync();
 
             rotaEntregaDto.Id = rotaEntrega.Id;
-            return CreatedAtAction(nameof(GetRotaEntrega), new { id = rotaEntrega.Id });
+
+            return Ok(rotaEntregaDto);
+            //TODO: REVISAR - System.InvalidOperationException: No route matches the supplied values.
+            //return CreatedAtAction(nameof(GetRotaEntrega), new { id = rotaEntrega.Id });
         }
 
         /// <summary>

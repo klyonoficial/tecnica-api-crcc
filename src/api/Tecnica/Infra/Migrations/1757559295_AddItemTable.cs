@@ -14,14 +14,6 @@ namespace Tecnica.Infra.Migrations
                 .WithColumn("preco").AsCustom("decimal(18,2)").NotNullable()
                 .WithColumn("quantidade").AsInt32().NotNullable()
                 .WithColumn("numeros_serie").AsCustom("text").Nullable();
-
-            Create.ForeignKey("fk_item_venda")
-                .FromTable("item").ForeignColumn("venda_id")
-                .ToTable("venda").PrimaryColumn("id");
-
-            Create.ForeignKey("fk_item_produto")
-                .FromTable("item").ForeignColumn("produto_id")
-                .ToTable("produto").PrimaryColumn("id");
         }
 
         public override void Down()

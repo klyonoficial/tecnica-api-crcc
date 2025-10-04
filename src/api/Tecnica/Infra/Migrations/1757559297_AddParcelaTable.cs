@@ -18,14 +18,6 @@ namespace Tecnica.Infra.Migrations
                 .WithColumn("status").AsCustom("varchar(5)").NotNullable()
                 .WithColumn("data_remanejamento").AsDateTime().Nullable()
                 ;
-
-            Create.ForeignKey("fk_parcela_venda")
-                .FromTable("parcela").ForeignColumn("venda_id")
-                .ToTable("venda").PrimaryColumn("id");
-
-            Create.ForeignKey("fk_parcela_forma_pagamento")
-                .FromTable("parcela").ForeignColumn("forma_pagamento_id")
-                .ToTable("forma_pagamento").PrimaryColumn("id");
         }
 
         public override void Down()
