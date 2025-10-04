@@ -12,10 +12,6 @@ namespace Tecnica.Infra.Migrations
                 .WithColumn("pessoa_id").AsInt64().NotNullable()
                 .WithColumn("tipo").AsCustom("varchar(50)").NotNullable()
                 .WithColumn("nome").AsCustom("varchar(200)").NotNullable();
-
-            Create.ForeignKey("fk_arquivo_pessoa")
-                .FromTable("arquivo").ForeignColumn("pessoa_id")
-                .ToTable("pessoa").PrimaryColumn("id");
         }
 
         public override void Down()
