@@ -20,7 +20,7 @@ COPY --from=build /app/dist .
 COPY nginx.conf.template /etc/nginx/conf.d/default.conf.template
 
 # Cria config.js runtime com URL da API (do ENV do Heroku)
-RUN echo "window.VITE_API_URL = '${VITE_API_URL:-https://tecnica-api-crcc-f7d9bbf52931.herokuapp.com}';" > /usr/share/nginx/html/config.js
+RUN echo "window.VITE_API_URL = '${VITE_API_URL:-https://tecnica-api-crcc-f7d9bbf52931.herokuapp.com/api}';" > /usr/share/nginx/html/config.js
 
 EXPOSE 8080
 
