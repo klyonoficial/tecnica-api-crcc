@@ -23,7 +23,7 @@ jobs:
 
       - name: Build e push Docker image Vue.js
         run: |
-          docker build -t registry.heroku.com/${{ secrets.HEROKU_CLIENT_NAME }}/web ./src/client
+          docker buildx build --platform linux/amd64 --provenance=false --load -t registry.heroku.com/${{ secrets.HEROKU_CLIENT_NAME }}/web ./src/api
           docker push registry.heroku.com/${{ secrets.HEROKU_CLIENT_NAME }}/web
 
       - name: Install Heroku CLI

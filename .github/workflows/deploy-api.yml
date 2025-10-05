@@ -23,7 +23,7 @@ jobs:
 
       - name: Build e push Docker image
         run: |
-          docker build -t registry.heroku.com/${{ secrets.HEROKU_API_NAME }}/web ./src/api
+          docker buildx build --platform linux/amd64 --provenance=false --load -t registry.heroku.com/${{ secrets.HEROKU_API_NAME }}/web ./src/api
           docker push registry.heroku.com/${{ secrets.HEROKU_API_NAME }}/web
 
       - name: Install Heroku CLI
