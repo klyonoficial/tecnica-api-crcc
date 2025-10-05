@@ -26,5 +26,9 @@ jobs:
           docker build -t registry.heroku.com/${{ secrets.HEROKU_CLIENT_NAME }}/web ./src/client
           docker push registry.heroku.com/${{ secrets.HEROKU_CLIENT_NAME }}/web
 
+      - name: Install Heroku CLI
+        run: |
+          curl https://cli-assets.heroku.com/install.sh | sh
+          
       - name: Release app
         run: heroku container:release web --app ${{ secrets.HEROKU_CLIENT_NAME }}
