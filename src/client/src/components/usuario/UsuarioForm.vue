@@ -2,7 +2,6 @@
   <div class="grid">
     <div class="col-12">
       <div class="card">
-        <h5>Cadastro de Usuário</h5>
         <form @submit.prevent="onSubmit" class="p-fluid">
           <div class="field">
             <label for="email">Email</label>
