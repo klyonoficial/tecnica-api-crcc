@@ -6,7 +6,7 @@ heroku login
 heroku container:login
 
 # API - BACKEND
-#Criar a imagem:
+## Criar a imagem:
 docker buildx build --platform linux/amd64 --provenance=false --load -t registry.heroku.com/tecnica-client-crcc/web .
 
 ## Enviar para heroku:
@@ -25,3 +25,10 @@ docker push registry.heroku.com/tecnica-client-crcc/web
 
 ## publicar:
 heroku container:release web --app tecnica-client-crcc
+
+# Rollback Deploy
+## Listar Versões das Releases
+heroku releases --app <app>
+
+## Fazer o rollback
+heroku rollback <versão> --app <app>
