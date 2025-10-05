@@ -10,7 +10,7 @@ namespace Tecnica.Controllers
         {
             var healthStatus = new
             {
-                status = "UP NOW",
+                status = "UP",
                 timestamp = DateTime.UtcNow
             };
 
