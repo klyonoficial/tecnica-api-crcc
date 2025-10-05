@@ -8,6 +8,7 @@ import ConfirmationService from 'primevue/confirmationservice';
 import ToastService from 'primevue/toastservice';
 
 import '@/assets/styles.scss';
+import 'primeflex/primeflex.css';
 
 const app = createApp(App);
 

@@ -2,7 +2,7 @@
     <div class="grid">
         <div class="col-12">
             <div class="card">
-                <TabView v-model:activeIndex="currentStep">
+                <TabView v-model:activeIndex="currentStep" :scrollable="true">
                     <TabPanel header="Dados Pessoais">
                         <DadosPessoaisStep 
                             :cliente="cliente" 

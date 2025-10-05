@@ -6,10 +6,10 @@
         "build": "vite build",
         "preview": "vite preview",
         "lint": "eslint --fix . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore",
-		"serve": "vue-cli-service serve",
-		"build:local": "vue-cli-service build --mode local",
-		"build:staging": "vue-cli-service build --mode staging",
-		"build:production": "vue-cli-service build --mode production"
+        "serve": "vue-cli-service serve",
+        "build:local": "vue-cli-service build --mode local",
+        "build:staging": "vue-cli-service build --mode staging",
+        "build:production": "vue-cli-service build --mode production"
     },
     "dependencies": {
         "@primeuix/themes": "^1.0.0",
@@ -17,6 +17,7 @@
         "@vuelidate/validators": "^2.0.4",
         "axios": "^1.12.2",
         "chart.js": "3.3.2",
+        "primeflex": "^4.0.0",
         "primeicons": "^7.0.0",
         "primevue": "^4.3.1",
         "tailwindcss-primeui": "^0.5.0",
