@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 using Serilog;
 using Tecnica.Core.Infra;
 using Tecnica.Core.Infra.Data;
@@ -21,7 +22,15 @@ DaoRegister.AddDaos(builder.Services);
 
 // Swagger
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "Tecnica API",
+        Version = "v1",
+        Description = "API da aplicação Tecnica",
+    });
+});
 
 // Serilog
 Log.Logger = new LoggerConfiguration()
