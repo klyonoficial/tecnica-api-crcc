@@ -20,7 +20,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 DaoRegister.AddDaos(builder.Services);
 
-// Swagger
+// Swagger - teste
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
