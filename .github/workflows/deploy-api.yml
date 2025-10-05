@@ -19,7 +19,10 @@ jobs:
         uses: docker/setup-buildx-action@v2
 
       - name: Login no Heroku Container Registry
-        run: echo "${{ secrets.HEROKU_API_KEY }}" | docker login --username=_ --password-stdin registry.heroku.com
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+        run: |
+          echo $HEROKU_API_KEY | docker login --username=_ --password-stdin registry.heroku.com
 
       - name: Build e push Docker image
         run: |
@@ -27,8 +30,13 @@ jobs:
           docker push registry.heroku.com/${{ secrets.HEROKU_API_NAME }}/web
 
       - name: Install Heroku CLI
+        run: curl https://cli-assets.heroku.com/install.sh | sh
+
+      - name: Login Heroku CLI via API Key
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
         run: |
-          curl https://cli-assets.heroku.com/install.sh | sh
-          
+          heroku auth:token # valida que o CLI reconhece a API Key
+
       - name: Release app
         run: heroku container:release web --app ${{ secrets.HEROKU_API_NAME }}
