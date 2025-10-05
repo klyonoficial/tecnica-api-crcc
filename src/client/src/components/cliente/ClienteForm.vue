@@ -137,9 +137,16 @@ export default {
         const onSubmit = async () => {
             submitting.value = true;
             try {
-                await clienteService.saveCliente(cliente);
+                const clienteSalvo = await clienteService.saveCliente(cliente);
+                
+                // Se o cliente foi criado (não tinha ID), atualiza o ID local
+                if (!cliente.id && clienteSalvo && clienteSalvo.id) {
+                    cliente.id = clienteSalvo.id;
+                    // Atualiza a URL para incluir o ID do cliente
+                    window.history.replaceState({}, '', `/clientes/${clienteSalvo.id}`);
+                }
+                
                 toast.add({ severity: 'success', summary: 'Sucesso', detail: 'Cliente salvo com sucesso!', life: 3000 });
-                // Redirecionar ou redefinir o formulário conforme necessário
             } catch (error) {
                 handleError(error);
             } finally {

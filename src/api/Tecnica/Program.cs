@@ -3,6 +3,7 @@ using Serilog;
 using Tecnica.Core.Infra;
 using Tecnica.Core.Infra.Data;
 using Tecnica.Domain.Daos;
+using Tecnica.Infra;
 
 var builder = WebApplication.CreateBuilder(args);
 ConfigurationManager configuration = builder.Configuration;
@@ -42,7 +43,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy(CorsPolicy,
                       policy =>
                       {
-                          policy.WithOrigins("https://tecnica-client-crcc-5e3a0b2d8fd9.herokuapp.com") // endereço do seu front Vue
+                          policy.AllowAnyOrigin() // aceita qualquer origem
                                 .AllowAnyHeader()
                                 .AllowAnyMethod();
                       });
@@ -60,6 +61,9 @@ var app = builder.Build();
 
 // CORS precisa ser chamado antes do UseRouting e endpoints
 app.UseCors(CorsPolicy);
+
+// Global Exception Middleware
+app.UseMiddleware<GlobalExceptionMiddleware>();
 
 // Swagger
 app.UseSwagger();

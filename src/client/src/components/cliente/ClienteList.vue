@@ -128,7 +128,7 @@ const deleteSelectedClientes = async () => {
 
             <Column selectionMode="multiple" style="width: 3rem" :exportable="false"></Column>
             <Column field="id" header="ID" sortable style="min-width: 8rem"></Column>
-            <Column field="cpfcnpj" header="CPF/CNPJ" sortable style="min-width: 16rem"></Column>
+            <Column field="cpfCnpj" header="CPF/CNPJ" sortable style="min-width: 16rem"></Column>
             <Column field="razaoSocial" header="Razão Social" sortable style="min-width: 16rem"></Column>
             <Column field="contato" header="Contato" sortable style="min-width: 16rem"></Column>
             <Column field="telefone" header="Telefone" sortable style="min-width: 16rem"></Column>

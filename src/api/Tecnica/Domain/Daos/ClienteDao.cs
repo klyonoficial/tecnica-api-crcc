@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Tecnica.Domain.Entities;
+using Tecnica.Infra;
 
 namespace Tecnica.Domain.Daos
 {
@@ -21,6 +22,14 @@ namespace Tecnica.Domain.Daos
                 .Include(c => c.Enderecos)
                 .Include(c => c.Arquivos)
                 .FirstOrDefaultAsync(c => c.Id == id);
+        }
+
+        public async Task<Cliente?> ObterPorCpfCnpjAsync(string cpfCnpj)
+        {
+            Assegure.NaoNulo(cpfCnpj, "O CPF/CNPJ deve ser informado.");
+            cpfCnpj = cpfCnpj.RemoveMask();
+            return await _context.Set<Cliente>()
+                .FirstOrDefaultAsync(c => c.CpfCnpj == cpfCnpj);
         }
 
         public async Task<List<Cliente>> ListarTodosAsync()

@@ -76,7 +76,7 @@ namespace Tecnica.Domain.Entities
             Assegure.Que(Validation.IsValidCpfCnpj(cpfCnpj), "Um CPF/CNPJ válido deve ser informado.");
 
             VendedorId = vendedorId;
-            CpfCnpj = cpfCnpj.RemoverCaracteresEspeciais();
+            CpfCnpj = cpfCnpj.RemoveMask();
             RazaoSocial = razaoSocial;
             NomeFantasia = nomeFantasia;
             Contato = contato;
@@ -144,7 +144,7 @@ namespace Tecnica.Domain.Entities
             Assegure.NaoNulo(razaoSocial, "A razão social deve ser informada.");
 
             VendedorId = vendedorId;
-            CpfCnpj = cpfCnpj;
+            CpfCnpj = cpfCnpj.RemoveMask();
             RazaoSocial = razaoSocial;
             NomeFantasia = nomeFantasia;
             Contato = contato;

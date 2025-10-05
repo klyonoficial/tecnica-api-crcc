@@ -47,8 +47,9 @@ namespace Tecnica.Domain.Entities
             Assegure.NaoNulo(bairro, "O bairro deve ser informado.");
             Assegure.NaoNulo(uf, "A UF deve ser informada.");
             Assegure.NaoNulo(tipo, "O tipo deve ser informado.");
+            Assegure.NaoNulo(codigoIbge, "O código IBGE deve ser informado.");
 
-            Cep = cep.RemoverCaracteresEspeciais();
+            Cep = cep.RemoveMask();
             Logradouro = logradouro;
             CodigoIbge = codigoIbge;
             Bairro = bairro;

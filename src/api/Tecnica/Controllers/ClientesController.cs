@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Tecnica.Domain.Daos;
 using Tecnica.Domain.Dtos;
 using Tecnica.Domain.Entities;
+using Tecnica.Infra;
 
 namespace Tecnica.Controllers
 {
@@ -54,6 +55,10 @@ namespace Tecnica.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateCliente([FromBody] ClienteDto dto)
         {
+            // Valida se já existe cliente com o mesmo CPF/CNPJ
+            var clienteExistente = await _clienteDao.ObterPorCpfCnpjAsync(dto.CpfCnpj);
+            Assegure.Que(clienteExistente == null, () => $"Já existe um cliente cadastrado com o CPF/CNPJ: {dto.CpfCnpj}");
+
             // Map Enderecos DTOs
             List<Endereco>? enderecos = null;
             if (dto.Enderecos != null && dto.Enderecos.Any())
@@ -73,8 +78,6 @@ namespace Tecnica.Controllers
             await _context.SaveChangesAsync();
 
             return Ok(ToDto(cliente));
-            //TODO: REVISAR - System.InvalidOperationException: No route matches the supplied values.
-            //return CreatedAtAction(nameof(GetCliente), new { id = cliente.Id }, ToDto(cliente));
         }
 
         [HttpPut]
@@ -83,6 +86,10 @@ namespace Tecnica.Controllers
             var cliente = await _clienteDao.ObterPorIdAsync(dto.Id!.Value);
             if (cliente == null)
                 return NotFound();
+
+            // Valida se já existe outro cliente com o mesmo CPF/CNPJ (excluindo o próprio cliente)
+            var clienteExistente = await _clienteDao.ObterPorCpfCnpjAsync(dto.CpfCnpj);
+            Assegure.Que(clienteExistente == null || clienteExistente.Id == dto.Id, () => $"Já existe um cliente cadastrado com o CPF/CNPJ: {dto.CpfCnpj}");
 
             // Use domain entity method to perform update (includes status normalization)
             // Map EnderecoDto list to Endereco entities

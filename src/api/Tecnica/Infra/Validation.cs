@@ -1151,5 +1151,10 @@ namespace Tecnica.Infra
 
         }
 
+        public static string RemoveMask(this string cpfCnpj)
+        {
+            return cpfCnpj.Replace(".", "").Replace("-", "").Replace("/", "").Replace("\\", "").Trim();
+        }
+
     }
 }
