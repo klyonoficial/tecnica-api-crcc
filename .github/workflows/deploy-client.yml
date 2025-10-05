@@ -18,25 +18,29 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
+      - name: Install Heroku CLI
+        run: curl https://cli-assets.heroku.com/install.sh | sh
+
+      - name: Login Heroku CLI
+        uses: akhileshns/heroku-deploy@v3.14.15
+        with:
+          heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
+          heroku_app_name: ${{ secrets.HEROKU_CLIENT_NAME }}
+          heroku_email: ${{ secrets.HEROKU_EMAIL }}
+          justlogin: true
+
+      - name: Check Heroku login
+        run: heroku auth:whoami
+
       - name: Login no Heroku Container Registry
         env:
           HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
-        run: |
-          echo $HEROKU_API_KEY | docker login --username=_ --password-stdin registry.heroku.com
+        run: echo $HEROKU_API_KEY | docker login --username=_ --password-stdin registry.heroku.com
 
       - name: Build e push Docker image Vue.js
         run: |
           docker buildx build --platform linux/amd64 --provenance=false --load -t registry.heroku.com/${{ secrets.HEROKU_CLIENT_NAME }}/web ./src/client
           docker push registry.heroku.com/${{ secrets.HEROKU_CLIENT_NAME }}/web
 
-      - name: Install Heroku CLI
-        run: curl https://cli-assets.heroku.com/install.sh | sh
-
-      - name: Login Heroku CLI via API Key
-        env:
-          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
-        run: |
-          heroku auth:token # valida que o CLI reconhece a API Key
-
-      - name: Release app
+      - name: Release container no Heroku
         run: heroku container:release web --app ${{ secrets.HEROKU_CLIENT_NAME }}
